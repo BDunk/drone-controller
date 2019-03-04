@@ -7,18 +7,41 @@ MAX_WIDTH_MILLIS = 2
 MIN_WIDTH_MILLIS = 1
 PULSE_PERIOD =20
 
-def duty_cycle_from_percent(percent_speed:float): #make ridiculous sub calculations for the memes?
+def duty_cycle_from_percent(percent_speed:float):
     duty_cycle_input = 100*(MIN_WIDTH_MILLIS+(percent_speed/100)*(MAX_WIDTH_MILLIS-MIN_WIDTH_MILLIS))/PULSE_PERIOD
 
     if(duty_cycle_input>100*MAX_WIDTH_MILLIS/PULSE_PERIOD):
         duty_cycle_input=100*MAX_WIDTH_MILLIS/PULSE_PERIOD
-    
+
     elif(duty_cycle_input<100*MIN_WIDTH_MILLIS/PULSE_PERIOD):
         100 * MIN_WIDTH_MILLIS / PULSE_PERIOD
 
     return duty_cycle_input
 
-#write a class for motor with pin to initialize, its position, it's direction, etc. Make function that changes the speed of the motor
+
+class Motor (object):
+    """
+    motor objects represent our physical motors. they have these properties:
+    FrontOrBack: front or back position
+    LeftOrRight: left or right position
+    PinOut: GPIO index number of the pin associated with this motor
+    PropellerDirection: clockwise/counterclockwise rotation
+    PercentSpeed: represents the percentage of the length of pulse between min and max for our escs, can only be 0.0-100.0
+    """
+    #I don't think we really need all of these properties, but I got excited
+
+    def __init__(self, FrontOrBack, LeftOrRight, Pinout, PropellerDirection, PercentSpeed):
+        self.FrontOrBack = FrontOrBack
+        self.LeftOrRight = LeftOrRight
+        self.Pinout = Pinout
+        self.PropellerDirection = PropellerDirection
+        self.PercentSpeed = PercentSpeed
+
+    #does nothing
+    #i dont know how to relate objects to other objects (relate pin to motor object)
+    #we should consider whether we care about our ESCs ability to brake and move in reverse
+    def update_speed(self):
+        #pinForThisObject.ChangeDutyCycle(duty_cycle_from_percent(self.PercentSpeed))
 
 
 
