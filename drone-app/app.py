@@ -7,9 +7,18 @@ MAX_WIDTH_MILLIS = 2
 MIN_WIDTH_MILLIS = 1
 PULSE_PERIOD =20
 
-def duty_cycle_from_percent(percent_speed:float):
+def duty_cycle_from_percent(percent_speed:float): #make ridiculous sub calculations for the memes?
     duty_cycle_input = 100*(MIN_WIDTH_MILLIS+(percent_speed/100)*(MAX_WIDTH_MILLIS-MIN_WIDTH_MILLIS))/PULSE_PERIOD
+
+    if(duty_cycle_input>100*MAX_WIDTH_MILLIS/PULSE_PERIOD):
+        duty_cycle_input=100*MAX_WIDTH_MILLIS/PULSE_PERIOD
+    
+    elif(duty_cycle_input<100*MIN_WIDTH_MILLIS/PULSE_PERIOD):
+        100 * MIN_WIDTH_MILLIS / PULSE_PERIOD
+
     return duty_cycle_input
+
+#write a class for motor with pin to initialize, its position, it's direction, etc. Make function that changes the speed of the motor
 
 
 
