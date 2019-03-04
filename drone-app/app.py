@@ -33,15 +33,18 @@ class Motor (object):
     def __init__(self, FrontOrBack, LeftOrRight, Pinout, PropellerDirection, PercentSpeed):
         self.FrontOrBack = FrontOrBack
         self.LeftOrRight = LeftOrRight
-        self.Pinout = Pinout
+        self.Pinout = GPIO.PWM()
         self.PropellerDirection = PropellerDirection
         self.PercentSpeed = PercentSpeed
 
+
+
+
     #does nothing
-    #i dont know how to relate objects to other objects (relate pin to motor object)
     #we should consider whether we care about our ESCs ability to brake and move in reverse
+    #should this update separate from changing the value for speed?
     def update_speed(self):
-        #pinForThisObject.ChangeDutyCycle(duty_cycle_from_percent(self.PercentSpeed))
+        self.Pinout.ChangeDutyCycle(duty_cycle_from_percent(self.PercentSpeed))
 
 
 
@@ -50,6 +53,9 @@ GPIO.setup(18, GPIO.OUT)
 
 p = GPIO.PWM(18, 50)  # channel=12 frequency=50Hz
 p.start(0)
+#oh sweet jesus i don't even know if this is something I can do, but I've already made unreadable spaghetti
+#should there be a Motor function that creates a pin object?
+m=Motor('Front','Left',p,'clockwise',0)
 
 p.ChangeDutyCycle(5)
 time.sleep(60)
