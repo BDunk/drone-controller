@@ -8,8 +8,8 @@ MIN_WIDTH_MILLIS = 1
 PULSE_PERIOD =20
 
 def duty_cycle_from_percent(percent_speed:float):
-    something = 5.0
-    return something
+    duty_cycle_input = 100*(MIN_WIDTH_MILLIS+(percent_speed/100)*(MAX_WIDTH_MILLIS-MIN_WIDTH_MILLIS))/PULSE_PERIOD
+    return duty_cycle_input
 
 
 
