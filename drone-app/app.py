@@ -39,8 +39,6 @@ class Motor (object):
 
 
 
-
-    #does nothing
     #we should consider whether we care about our ESCs ability to brake and move in reverse
     #should this update separate from changing the value for speed?
     def update_speed(self):
@@ -77,8 +75,11 @@ GPIO.cleanup()
 
 
 
-
-
+#needs despaghettification
+#100*(MIN_WIDTH_MILLIS+(percent_speed/100)*(MAX_WIDTH_MILLIS-MIN_WIDTH_MILLIS))/PULSE_PERIOD
+#actual length= min+(speed/100)*(max-min)
+#decimal duty cycle = actual length/period
+#percent duty cycle = 100 *decimal duty cycle
 
 # 20 ms pulses
 # 1 ms 0% to 2 ms 100%
