@@ -3,10 +3,14 @@
 import time
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(14, GPIO.OUT)
+GPIO.setup(12, GPIO.OUT)
 
-p = GPIO.PWM(14, 50)  # channel=12 frequency=50Hz
+p = GPIO.PWM(12, 50)  # channel=12 frequency=50Hz
 p.start(0)
+
+p.ChangeDutyCycle(5)
+time.sleep(5)
+
 try:
     while True:
         for dc in range(60, 90, 1):
