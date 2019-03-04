@@ -24,7 +24,7 @@ class Motor (object):
     motor objects represent our physical motors. they have these properties:
     FrontOrBack: front or back position
     LeftOrRight: left or right position
-    PinOut: GPIO index number of the pin associated with this motor
+    PinOut: GPIO.PWM object for output to motor
     PropellerDirection: clockwise/counterclockwise rotation
     PercentSpeed: represents the percentage of the length of pulse between min and max for our escs, can only be 0.0-100.0
     """
