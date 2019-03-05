@@ -2,11 +2,14 @@
 import time
 from drone import Drone
 
-#NOTE: this controller waits 30 seconds, rises for 5 seconds at low rate, then proceeds down 10 seconds, and repeats
+# NOTE: this controller waits 30 seconds, rises for 5 seconds at low rate, then proceeds down 10 seconds, and repeats
+
+# Other controllers will either take input from a remote control via sensors,
+# or streams of positions from an iphone app, or be fully autonomous :-)
 
 class TestFlightController (object):
 
-    def __init__(self, drone_to_control):
+    def __init__(self, drone_to_control: Drone):
         self.drone_to_control = drone_to_control
         self.current_state = "WAIT"
         self.enter_state_time = time.time()
