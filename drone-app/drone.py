@@ -29,7 +29,13 @@ class Drone (object):
         # This is the magic of stability control and responding to instructions
         raise NotImplementedError
 
+    def get_orientattion(self):
+        #does this make most sense as two angles from gravity?
+        raise NotImplemented
 
+    def get_acceleration(self):
+        #either relative to drone, or relative to magnetic pole or whatever
+        raise NotImplemented
 
     def rise_at_rate(self, rise_percent):
 
