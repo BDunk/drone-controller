@@ -36,6 +36,9 @@ class MotorMatrix(object):
         # Todo: loop through all motors, calling start
         raise NotImplementedError
 
+    #Todo: define something that runs on a loop that just stabilizes the drone
+    #Todo: decide how it chooses to recover from a given stimulus
+    #Todo: decide how it determines whether it should yaw then pitch, or pitch and roll?
     #Todo: define fundamental control operation in addition to rotation; pitch? roll?
     #Todo: is something special required to deal with oriented inversion? how to sum effects?
     def rotate(self, percent_max_positive_clockwise:float):
