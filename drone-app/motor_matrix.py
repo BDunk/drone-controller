@@ -47,9 +47,6 @@ class MotorMatrix(object):
         raise NotImplementedError
 
 
-    def get_rotation(self):
-        raise NotImplementedError
-
 
     def cleanup(self):
         # Todo: loop and stop all motors and cleanup (question: how to confirm started?)

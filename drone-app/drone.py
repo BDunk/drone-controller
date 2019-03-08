@@ -38,7 +38,8 @@ class Drone (object):
         raise NotImplemented
 
     def rise_at_rate(self, rise_percent):
-
+        #check velocity, if velocity is not at desired rate, increase motor rate
+        #check velocity, if it is changing in the wrong way, counter that
         raise NotImplementedError()
 
 
