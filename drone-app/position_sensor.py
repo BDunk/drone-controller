@@ -2,7 +2,7 @@
 
 
 class PositionSensor(object):
-    #TODO: should have two components, orientation and accel in space separately.
+    #this should read similar to the post we have read at some point
     def __init__(self):
         #yaw_accel
         #roll_accel
