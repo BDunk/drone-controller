@@ -3,6 +3,7 @@ from motor import Motor
 
 # NOTE design choice: this class is passively attempting to accomplish the rotations pitch requested.
 # External logic must be sensing and requesting adjustments.
+#Pinout diagram found here: https://www.codecubix.eu/index.php/2018/05/29/hardware-pwm-with-raspberry-pi-zero/
 
 
 class MotorMatrix(object):
@@ -10,8 +11,8 @@ class MotorMatrix(object):
     # Todo: get pinouts decided
     FRONT_LEFT_PIN = 12
     FRONT_RIGHT_PIN = 18
-    BACK_LEFT_PIN = 0
-    BACK_RIGHT_PIN = 0
+    BACK_LEFT_PIN = 13
+    BACK_RIGHT_PIN = 19
 
     def __init__(self):
         #NOTE: this is very static code, may be better to loop and calculuate these, or subclass to isolate motor
