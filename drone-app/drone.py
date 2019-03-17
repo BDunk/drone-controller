@@ -10,19 +10,32 @@ class Drone (object):
     #TODO: set constant to conservative value, affects the set point targeted when passing a percent.
     MAXIMUM_RISE_RATE_METERS_PER_SECOND = 1234
 
+    MODE_STOPPED = 0
+    MODE_SENSOR_LOG = 1
+    MODE_ACTIVE = 2
 
     def __init__(self):
+        self.mode = Drone.MODE_STOPPED
         self.motor_matrix = MotorMatrix()
         self.position_sensor = PositionSensor()
 
 
 
+    def start_sensor_log(self):
+        self.mode = Drone.MODE_SENSOR_LOG
 
     def start(self):
+        self.mode = Drone.MODE_ACTIVE
         self.motor_matrix.start_your_engines()
 
 
     def process_sensors(self):
+
+        if self.mode == Drone.MODE_SENSOR_LOG:
+
+
+
+
 
         # TODO: read sensors, update motion calculations, adjust motor matrix
 
