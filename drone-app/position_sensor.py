@@ -62,6 +62,13 @@ class PositionSensor(object):
 # Renaming MPU6050 to reflect that it supports other chips including our own.
 # separating out calibration and control from the chip (maybe)
 
+# Ben Note:
+
+# I'm very much an amateur, and I do understand that the nature of this type of
+# software is to really put all of the stuff for reading the sensors in one spot
+# but I really don't like how crazy unreadable and unwieldy this entire piece of
+# code is in it's current state.
+
 
 
 
