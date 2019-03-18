@@ -434,7 +434,7 @@ class MPU6050:
             self.min_gz = self.min_gz if sensor_data[5] > self.min_gz else sensor_data[5]
             '''
 
-        return ax / fifo_batches, ay / fifo_batches, az / fifo_batches, gx / fifo_batches, gy / fifo_batches, gz / fifo_batches, fifo_batches / sampling_rate
+        return [ax / fifo_batches, ay / fifo_batches, az / fifo_batches], [gx / fifo_batches, gy / fifo_batches, gz / fifo_batches], fifo_batches / sampling_rate
 
     def flushFIFO(self):
         #-------------------------------------------------------------------------------------------
