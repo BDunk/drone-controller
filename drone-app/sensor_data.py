@@ -1,21 +1,31 @@
-from position_sensor import MPU6050:
+from position_sensor import MPU6050
 
 class SensorData(object):
 
 #[x,y,z]
 
 def __init__(self):
+    self.chip=MPU6050()
+
+    self.linear_acceleration = [0,0,0]
     self.linear_velocity = [0,0,0]
     self.linear_position = [0,0,0]
 
+    self.angular_acceleration = [0,0,0]
     self.angular_velocity = [0,0,0]
     self.angular_position = [0,0,0]
 
-#drone has position relative to an absolute from north+ gravity
+    self.dt=0
 
-#drone has 6 accelerations, 6 velocities, and 6 positions (3 linear, 3 rotational each)
-#we will use the 3 linear accelerations to track a velocity (inverse sample frequency*acceleration)
-#we will use the 3 angular accelerations to track the position of gravity
+def updating_quantities(self):
 
-#this gives us full info about the drone from its starting position
+    # this doesn't work i think
+    self.linear_acceleration,self.angular_acceleration, self.dt = readFIFO(self.chip,numFIFOBatches(self.chip))
+
+    self.linear_velocity=
+    self.linear_position
+
+    self.angular_velocity
+    self.angular_position
+
     pass
