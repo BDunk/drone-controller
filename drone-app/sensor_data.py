@@ -2,45 +2,47 @@ from position_sensor import MPU6050
 
 class SensorData(object):
 
-#[x,y,z]
-
     def __init__(self):
-    self.chip=MPU6050()
+        self.chip=MPU6050()
 
-    self.linear_acceleration = [0,0,0]
-    self.linear_velocity = [0,0,0]
-    self.linear_position = [0,0,0]
+        self.linear_acceleration = [0,0,0]
+        self.linear_velocity = [0,0,0]
+        self.linear_position = [0,0,0]
 
-    self.angular_acceleration = [0,0,0]
-    self.angular_velocity = [0,0,0]
-    self.angular_position = [0,0,0]
+        self.angular_acceleration = [0,0,0]
+        self.angular_velocity = [0,0,0]
+        self.angular_position = [0,0,0]
 
-    self.dt=0
+        self.dt=0
 
+    # what are the scaling factors we want to use in this function?
+    # my assumption based on an overview of what we saw before was that it gave gyro numbers
+    # that had odd bounds, and we likely want it radian
     def updating_quantities(self):
-
-    # this doesn't work i think
-    self.linear_acceleration,self.angular_acceleration, self.dt = readFIFO(self.chip,numFIFOBatches(self.chip))
-
-    self.linear_velocity=
-    self.linear_position
-
-    self.angular_velocity
-    self.angular_position
-
-    pass
+        #assigns [ax,ay,az],[rax,ray,yaz],[t]
+        self.linear_acceleration,self.angular_acceleration, self.dt = readFIFO(self.chip,numFIFOBatches(self.chip))
 
 
-    def update_things(acceleration, velocity, position, dt):
-    delta_position = [v_component * dt for v_component in velocity]
+        # updates linear position using the velocity it believes it was travelling
+        # over the period of time since acceleration was last updates
+        # then updates velocity using acceleration it has just read
+        # this part needs to have the everloving shit optimized out of it
+        delta_linear_position = [v_component * self.dt for v_component in self.linear_velocity]
 
-    position = [sum(p_component) for p_component in zip(position, delta_position)]
+        self.linear_position = [sum(p_component) for p_component in zip(self.linear_position, delta_linear_position)]
 
-    delta_velocity = [a_component * dt for a_component in acceleration]
+        delta_linear_velocity = [a_component * self.dt for a_component in self.linear_acceleration]
 
-    velocity = [sum(v_component) for v_component in zip(velocity, delta_velocity)]
-
-    return acceleration, velocity, position
+        self.linear_velocity = [sum(v_component) for v_component in zip(self.linear_velocity, delta_linear_velocity)]
 
 
-print(update_things(acceleration, velocity, position, dt))
+        # same function as lines above, but updating rotation
+        delta_angular_position = [v_component * self.dt for v_component in self.angular_velocity]
+
+        self.angular_position = [sum(p_component) for p_component in zip(self.angular_position, delta_angular_position)]
+
+        delta_angular_velocity = [a_component * self.dt for a_component in self.angular_acceleration]
+
+        self.angular_velocity = [sum(v_component) for v_component in zip(self.angular_velocity, delta_angular_velocity)]
+
+
