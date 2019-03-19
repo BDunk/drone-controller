@@ -4,7 +4,7 @@ class SensorData(object):
 
 #[x,y,z]
 
-def __init__(self):
+    def __init__(self):
     self.chip=MPU6050()
 
     self.linear_acceleration = [0,0,0]
@@ -17,7 +17,7 @@ def __init__(self):
 
     self.dt=0
 
-def updating_quantities(self):
+    def updating_quantities(self):
 
     # this doesn't work i think
     self.linear_acceleration,self.angular_acceleration, self.dt = readFIFO(self.chip,numFIFOBatches(self.chip))
@@ -29,3 +29,18 @@ def updating_quantities(self):
     self.angular_position
 
     pass
+
+
+    def update_things(acceleration, velocity, position, dt):
+    delta_position = [v_component * dt for v_component in velocity]
+
+    position = [sum(p_component) for p_component in zip(position, delta_position)]
+
+    delta_velocity = [a_component * dt for a_component in acceleration]
+
+    velocity = [sum(v_component) for v_component in zip(velocity, delta_velocity)]
+
+    return acceleration, velocity, position
+
+
+print(update_things(acceleration, velocity, position, dt))
