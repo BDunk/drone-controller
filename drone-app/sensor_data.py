@@ -5,6 +5,17 @@ class SensorData(object):
     def __init__(self):
         self.chip=MPU6050()
 
+        # all quantities except linear position require the drone to be perfectly upright,
+        # stationary, and not accelerating.
+        # one of the components of angular position, and all of linear position, end up
+        # defined by how it is sitting on startup.
+        # to remove this, we could add compass data to lock in the final angular component,
+        # and we could use chips like gps to lock in two of the components of the linear position.
+        # The final component of linear position, height, is difficult because of changing terrain,
+        # and will be relative to starting location regardless, unless we ditch the use of calculating,
+        # it, and instead we use lidar/range finder.
+        # a lidar/gps or camera/gps/range finder combo could give very interesting data on both angular
+        # and linear positional data in a way just accelerometer could not.
         self.linear_acceleration = [0,0,0]
         self.linear_velocity = [0,0,0]
         self.linear_position = [0,0,0]
