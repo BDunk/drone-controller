@@ -30,6 +30,8 @@ from i2c import I2C
 
 
 
+
+
 global adc_frequency
 global sampling_rate
 global motion_rate

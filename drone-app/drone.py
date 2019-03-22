@@ -1,6 +1,6 @@
 
 from motor_matrix import MotorMatrix
-from position_sensor import PositionSensor
+from sensor_data import SensorData
 
 
 
@@ -17,7 +17,7 @@ class Drone (object):
     def __init__(self):
         self.mode = Drone.MODE_STOPPED
         self.motor_matrix = MotorMatrix()
-        self.position_sensor = PositionSensor()
+        self.sensor_data = SensorData()
 
 
 
@@ -33,7 +33,7 @@ class Drone (object):
 
         if self.mode == Drone.MODE_SENSOR_LOG:
 
-
+        #i dont really know how we want to move the sensor data into this class here
 
 
 
@@ -42,14 +42,8 @@ class Drone (object):
         # This is the magic of stability control and responding to instructions
         raise NotImplementedError
 
-    def get_orientattion(self):
-        #does this make most sense as two angles from gravity?
-        raise NotImplemented
 
-    def get_acceleration(self):
-        #either relative to drone, or relative to magnetic pole or whatever
-        raise NotImplemented
-
+    # all of these functions have a percentage, because they will have negative percentages to move backwards
     def rise_at_rate(self, rise_percent):
         #check velocity, if velocity is not at desired rate, increase motor rate
         #check velocity, if it is changing in the wrong way, counter that
@@ -62,6 +56,15 @@ class Drone (object):
     def forward_at_rate(self, forward_percent):
 
         raise NotImplementedError()
+
+    def right_at_rate(self, right_percent):
+
+        raise NotImplementedError()
+
+    def yaw_right_at(self, yaw_right_percent):
+        raise NotImplementedError
+
+
 
 
     def cleanup(self):
