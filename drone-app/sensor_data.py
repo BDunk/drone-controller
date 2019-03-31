@@ -1,4 +1,4 @@
-from position_sensor import MPU6050
+from position_sensor_driver import MPU6050
 
 class SensorData(object):
 

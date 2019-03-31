@@ -43,31 +43,6 @@ adc_frequency = 1000  # defined by dlpf >= 1; DO NOT USE ZERO => 8000 adc_freque
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
-class PositionSensor(object):
-    #this should read similar to the post we have read at some point
-    def __init__(self):
-        #yaw_accel
-        #roll_accel
-        #pitch_accel
-
-        #forward_accel
-        #lateral_accel
-        #vertical_accel
-        return
-
-    def reset_sensor(self):
-
-        return
-
-
-# Craig Note:
-
-# My plan was to separate this code in a fewer laters
-# I2C just in its own file separate from the chip itself
-# Renaming MPU6050 to reflect that it supports other chips including our own.
-# separating out calibration and control from the chip (maybe)
-
 # Ben Note:
 
 # I'm very much an amateur, and I do understand that the nature of this type of
@@ -76,6 +51,19 @@ class PositionSensor(object):
 # code is in it's current state.
 
 
+# On readabilitiy:
+
+# Drivers are a notoriously unreadable component, this was my random pick for the first linux usb driver I found:
+# https://github.com/torvalds/linux/blob/master/drivers/usb/c67x00/c67x00-drv.c
+# It comes about because a lot of the values are arbitrary (memory addresses, register numbers) and it is
+# at an interface level where you do not typically have abstractions like json formats or function names
+# (If you want something to happen you poke a code into memory address).
+# I think the best response is to:
+# a) Try and keep the responsibilities small (hence separating I2C from this chip)
+# so we have a "can reason about" sized context
+# b) Try to use constants and other names that make it clearer what the random address or value means
+
+# On this code: After we work with it a bit perhaps the naming can be evolved.
 
 
 
@@ -89,7 +77,7 @@ class PositionSensor(object):
 #  - MPU-9250
 #
 ####################################################################################################
-class MPU6050:
+class PositionSensorDriver:
     i2c = None
 
     # Registers/etc.
