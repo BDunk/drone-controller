@@ -1,3 +1,4 @@
+import smbus
 
 class I2C:
 

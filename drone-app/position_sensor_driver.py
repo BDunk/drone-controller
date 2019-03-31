@@ -14,23 +14,12 @@
 ####################################################################################################
 ####################################################################################################
 
-
-
 import time
-import sys
-
 import math
-
-import smbus
 
 import logging
 
-import RPi.GPIO as GPIO
 from i2c import I2C
-
-
-
-
 
 global adc_frequency
 global sampling_rate
