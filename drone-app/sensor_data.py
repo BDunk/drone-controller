@@ -1,4 +1,5 @@
 import logging
+import math
 
 from position_sensor_driver import PositionSensorDriver
 
@@ -30,6 +31,16 @@ class SensorData(object):
         self.angular_acceleration = [0,0,0]
         self.angular_velocity = [0,0,0]
         self.angular_position = [0,0,0]
+
+        self.linear_scaling = 9.8
+
+        self.angular_max=2*math.pi
+
+        self.angular_min=0
+
+        self.angular_scaling=2*math.pi/(self.angular_max-self.angular_min)
+
+
 
         self.dt=0
 
@@ -74,14 +85,15 @@ class SensorData(object):
         # updates linear position using the velocity it believes it was travelling
         # over the period of time since acceleration was last updates
         # then updates velocity using acceleration it has just read
-        # this part needs to have the everloving shit optimized out of it
-        delta_linear_position = [v_component * self.dt for v_component in self.linear_velocity]
 
-        self.linear_position = [sum(p_component) for p_component in zip(self.linear_position, delta_linear_position)]
+        #this needs to be updated to represent an earth frame rather than a drone frame
+        #delta_linear_position = [v_component * self.dt for v_component in self.linear_velocity]
 
-        delta_linear_velocity = [a_component * self.dt for a_component in self.linear_acceleration]
+        #self.linear_position = [sum(p_component) for p_component in zip(self.linear_position, delta_linear_position)]
 
-        self.linear_velocity = [sum(v_component) for v_component in zip(self.linear_velocity, delta_linear_velocity)]
+        #delta_linear_velocity = [a_component * self.dt for a_component in self.linear_acceleration]
+
+        #self.linear_velocity = [sum(v_component) for v_component in zip(self.linear_velocity, delta_linear_velocity)]
 
 
         # same function as lines above, but updating rotation
