@@ -50,9 +50,10 @@ class SensorData(object):
     def updating_quantities(self):
         #assigns [ax,ay,az],[rax,ray,yaz],[t]
         available_batches = self.chip.numFIFOBatches()
+        logger.info('batch count {}'.format(available_batches))
         if (available_batches <= 0):
-            logger.info('no batches avail')
             return
+        
         self.linear_acceleration,self.angular_acceleration, self.dt = self.chip.readFIFO(available_batches)
 
         if (self.is_debug_logging):
