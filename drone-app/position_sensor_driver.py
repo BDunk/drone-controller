@@ -23,11 +23,10 @@ from i2c import I2C
 
 global adc_frequency
 global sampling_rate
-global alpf
 
 
-adc_frequency = 1000  # defined by dlpf >= 1; DO NOT USE ZERO => 8000 adc_frequency
-sampling_rate = 500  # SRD = 1
+adc_frequency = 1000
+sampling_rate = 200  # SRD = 1
 
 
 logger = logging.getLogger()

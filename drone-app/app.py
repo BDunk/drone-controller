@@ -27,7 +27,7 @@ def do_control():
 
     while True:
         # hack temp to accumulate samples
-        time.sleep(10.0 / 1000)
+
         drone.process_sensors()
         controller.process_actions()
 

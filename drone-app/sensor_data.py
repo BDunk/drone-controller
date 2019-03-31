@@ -11,7 +11,7 @@ logger.setLevel(logging.INFO)
 class SensorData(object):
 
     def __init__(self):
-        self.chip=PositionSensorDriver()
+        self.acceleration_position_unit = PositionSensorDriver()
 
         # all quantities except linear position require the drone to be perfectly upright,
         # stationary, and not accelerating.
@@ -40,11 +40,12 @@ class SensorData(object):
 
         self.angular_scaling=2*math.pi/(self.angular_max-self.angular_min)
 
+        self.sample_count = 0
 
 
         self.dt=0
 
-        self.chip.flushFIFO()
+        self.acceleration_position_unit.flushFIFO()
 
     def set_debug_logging(self,should_debug_log: bool):
 
@@ -60,26 +61,13 @@ class SensorData(object):
     # that had odd bounds, and we likely want it radian
     def updating_quantities(self):
         #assigns [ax,ay,az],[rax,ray,yaz],[t]
-        available_batches = self.chip.numFIFOBatches()
-        logger.info('batch count {}'.format(available_batches))
+        acceleration_position_unit = self.acceleration_position_unit
+        available_batches = acceleration_position_unit.numFIFOBatches()
+
         if (available_batches <= 0):
             return
         
-        self.linear_acceleration,self.angular_acceleration, self.dt = self.chip.readFIFO(available_batches)
-
-        if (self.is_debug_logging):
-            logger.debug(
-                'Time {}, linear {}, angular {}'.format(
-                    self.dt,
-                    self.linear_acceleration,
-                    self.angular_acceleration
-                )
-            )
-
-        if True:
-            #early exit for first test
-            return
-
+        linear_acceleration,angular_acceleration, dt = acceleration_position_unit.readFIFO(available_batches)
 
 
         # updates linear position using the velocity it believes it was travelling
@@ -87,21 +75,29 @@ class SensorData(object):
         # then updates velocity using acceleration it has just read
 
         #this needs to be updated to represent an earth frame rather than a drone frame
-        #delta_linear_position = [v_component * self.dt for v_component in self.linear_velocity]
+        delta_linear_position = [v_component * dt for v_component in self.linear_velocity]
 
-        #self.linear_position = [sum(p_component) for p_component in zip(self.linear_position, delta_linear_position)]
+        self.linear_position = [sum(p_component) for p_component in zip(self.linear_position, delta_linear_position)]
 
-        #delta_linear_velocity = [a_component * self.dt for a_component in self.linear_acceleration]
+        delta_linear_velocity = [a_component * dt for a_component in linear_acceleration]
 
-        #self.linear_velocity = [sum(v_component) for v_component in zip(self.linear_velocity, delta_linear_velocity)]
+        self.linear_velocity = [sum(v_component) for v_component in zip(self.linear_velocity, delta_linear_velocity)]
+
+        self.sample_count += 1
+
+        if self.sample_count % 10 == 0:
+            logger.info("Batches this pass {}".format(available_batches))
+
+        if self.is_debug_logging and self.sample_count % 10 == 0:
+            logger.debug("Velocity every 10 {}".format(self.linear_velocity))
 
 
         # same function as lines above, but updating rotation
-        delta_angular_position = [v_component * self.dt for v_component in self.angular_velocity]
+        delta_angular_position = [v_component * dt for v_component in self.angular_velocity]
 
         self.angular_position = [sum(p_component) for p_component in zip(self.angular_position, delta_angular_position)]
 
-        delta_angular_velocity = [a_component * self.dt for a_component in self.angular_acceleration]
+        delta_angular_velocity = [a_component * dt for a_component in angular_acceleration]
 
         self.angular_velocity = [sum(v_component) for v_component in zip(self.angular_velocity, delta_angular_velocity)]
 
