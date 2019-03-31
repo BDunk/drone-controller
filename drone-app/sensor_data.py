@@ -33,6 +33,8 @@ class SensorData(object):
 
         self.dt=0
 
+        self.chip.flushFIFO()
+
     def set_debug_logging(self,should_debug_log: bool):
 
         self.is_debug_logging = should_debug_log
@@ -49,6 +51,7 @@ class SensorData(object):
         #assigns [ax,ay,az],[rax,ray,yaz],[t]
         available_batches = self.chip.numFIFOBatches()
         if (available_batches <= 0):
+            logger.info('no batches avail')
             return
         self.linear_acceleration,self.angular_acceleration, self.dt = self.chip.readFIFO(available_batches)
 
