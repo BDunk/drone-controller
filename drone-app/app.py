@@ -4,6 +4,7 @@ from no_op_flight_controller import NoOpFlightController
 from drone import Drone
 
 
+
 def do_control():
 
     drone = Drone()

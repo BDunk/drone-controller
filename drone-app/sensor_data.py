@@ -1,9 +1,16 @@
-from position_sensor_driver import MPU6050
+import logging
+
+from position_sensor_driver import PositionSensorDriver
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+
 
 class SensorData(object):
 
     def __init__(self):
-        self.chip=MPU6050()
+        self.chip=PositionSensorDriver()
 
         # all quantities except linear position require the drone to be perfectly upright,
         # stationary, and not accelerating.
@@ -26,12 +33,36 @@ class SensorData(object):
 
         self.dt=0
 
+    def set_debug_logging(self,should_debug_log: bool):
+
+        self.is_debug_logging = should_debug_log
+        if (should_debug_log):
+            logger.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.INFO)
+
+
     # what are the scaling factors we want to use in this function?
     # my assumption based on an overview of what we saw before was that it gave gyro numbers
     # that had odd bounds, and we likely want it radian
     def updating_quantities(self):
         #assigns [ax,ay,az],[rax,ray,yaz],[t]
-        self.linear_acceleration,self.angular_acceleration, self.dt = readFIFO(self.chip,numFIFOBatches(self.chip))
+        available_batches = self.chip.numFIFOBatches()
+        self.linear_acceleration,self.angular_acceleration, self.dt = self.chip.readFIFO(available_batches)
+
+        if (self.is_debug_logging):
+            logger.debug(
+                'Time {}, linear {}, angular {}'.format(
+                    self.dt,
+                    self.linear_acceleration,
+                    self.angular_acceleration
+                )
+            )
+
+        if True:
+            #early exit for first test
+            return
+
 
 
         # updates linear position using the velocity it believes it was travelling

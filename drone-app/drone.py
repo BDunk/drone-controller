@@ -23,6 +23,7 @@ class Drone (object):
 
     def start_sensor_log(self):
         self.mode = Drone.MODE_SENSOR_LOG
+        self.sensor_data.set_debug_logging(True)
 
     def start(self):
         self.mode = Drone.MODE_ACTIVE
@@ -31,13 +32,19 @@ class Drone (object):
 
     def process_sensors(self):
 
+        # Note: This both reads from the chip and updates position information.
+        # It may be more testable and clear to separate the two functions by
+        # reading the sensor directly here, and passing it back into a purely functional
+        # piece of code to accumulate the implications
+        self.sensor_data.updating_quantities()
+
         if self.mode == Drone.MODE_SENSOR_LOG:
+            # No control functions, early return
+            return
 
-        #i dont really know how we want to move the sensor data into this class here
 
 
-
-        # TODO: read sensors, update motion calculations, adjust motor matrix
+        # TODO: adjust motor matrix
 
         # This is the magic of stability control and responding to instructions
         raise NotImplementedError
