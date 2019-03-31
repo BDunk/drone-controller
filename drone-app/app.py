@@ -2,6 +2,7 @@
 from test_flight_controller import TestFlightController
 from no_op_flight_controller import NoOpFlightController
 from drone import Drone
+import time
 
 
 
@@ -20,10 +21,12 @@ def do_control():
     controller = NoOpFlightController(drone)
 
     while True:
+        # hack temp to accumulate samples
+        time.sleep(10 / 1000)
         drone.process_sensors()
         controller.process_actions()
 
 
 
 
-
+do_control()
