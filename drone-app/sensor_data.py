@@ -32,6 +32,9 @@ class SensorData(object):
         self.angular_velocity = [0,0,0]
         self.angular_position = [0,0,0]
 
+
+        self.hack_moving_average_velocity = [0,0,0]
+
         self.linear_scaling = 9.8
 
         self.angular_max=2*math.pi
@@ -43,8 +46,6 @@ class SensorData(object):
         self.sample_count = 0
 
 
-        self.dt=0
-
         self.acceleration_position_unit.flushFIFO()
 
     def set_debug_logging(self,should_debug_log: bool):
@@ -52,6 +53,8 @@ class SensorData(object):
         self.is_debug_logging = should_debug_log
         if (should_debug_log):
             logger.setLevel(logging.DEBUG)
+            self.acceleration_log = open("./accel.csv", "a+")
+            self.acceleration_log.write('ax, ay, az, dt\n')
         else:
             logger.setLevel(logging.INFO)
 
@@ -83,13 +86,18 @@ class SensorData(object):
 
         self.linear_velocity = [sum(v_component) for v_component in zip(self.linear_velocity, delta_linear_velocity)]
 
+        self.hack_moving_average_velocity = [0.95 * v_component[0] + 0.5 * v_component[1] for v_component in zip(self.hack_moving_average_velocity, self.linear_velocity)]
+
+        if self.is_debug_logging:
+            self.acceleration_log.write('{}, {}, {}, {}\n'.format(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], dt))
+
         self.sample_count += 1
 
-        if self.sample_count % 10 == 0:
+        if self.sample_count % 20 == 0:
             logger.info("Batches this pass {}".format(available_batches))
 
-        if self.is_debug_logging and self.sample_count % 10 == 0:
-            logger.debug("Velocity every 10 {}".format(self.linear_velocity))
+        # if self.is_debug_logging and self.sample_count % 20 == 0:
+        #    logger.debug("mav every 20 {}".format(self.hack_moving_average_velocity))
 
 
         # same function as lines above, but updating rotation

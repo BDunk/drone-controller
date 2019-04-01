@@ -447,6 +447,7 @@ class PositionSensorDriver:
         self.gz_offset = gz
 
     def scaleSensors(self, ax, ay, az, gx, gy, gz):
+
         qax = (ax - self.ax_offset) * self.__SCALE_ACCEL
         qay = (ay - self.ay_offset) * self.__SCALE_ACCEL
         qaz = (az - self.az_offset) * self.__SCALE_ACCEL
