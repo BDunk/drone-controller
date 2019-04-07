@@ -40,10 +40,11 @@ class SensorData(object):
 
         self.linear_acceleration_offsets = [0, 0, 0]
         self.linear_calibration_count = 0
+        self.linear_acceleration_scaling_factor=[1,1,1]
 
         self.angular_acceleration_offsets = [0, 0, 0]
         self.angular_acceleration_count = 0
-
+        self.angular_acceleration_scaling_factor[1,1,1]
 
 
         self.mode=SensorData.MODE_UNINITIALIZED
@@ -54,7 +55,7 @@ class SensorData(object):
 
         self.angular_min=0
 
-        self.angular_scaling=2*math.pi/(self.angular_max-self.angular_min)
+        #self.angular_scaling=2*math.pi/(self.angular_max-self.angular_min)
 
 
         self.acceleration_position_unit.flushFIFO()
@@ -145,6 +146,12 @@ class SensorData(object):
         return existing_calibration, existing_calibration_count
 
     def process_read(self, linear_acceleration, angular_acceleration,dt):
+
+        #self.linear_acceleration
+        #
+        #
+        #
+
         delta_linear_position = [v_component * dt for v_component in self.linear_velocity]
 
         self.linear_position = [sum(p_component) for p_component in zip(self.linear_position, delta_linear_position)]
