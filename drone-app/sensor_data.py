@@ -15,6 +15,7 @@ class SensorData(object):
     MODE_READING = 2
     MODE_DEBUGGING = 3
 
+    CALIBRATION_SECONDS = 2.0
 
     def __init__(self):
         self.acceleration_position_unit = PositionSensorDriver()
@@ -56,7 +57,6 @@ class SensorData(object):
         self.angular_min=0
 
         #self.angular_scaling=2*math.pi/(self.angular_max-self.angular_min)
-
 
         self.acceleration_position_unit.flushFIFO()
 

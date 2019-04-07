@@ -1,6 +1,6 @@
 
 import time
-from drone import Drone
+from drone import Drone, DroneControllerInterface
 
 # NOTE: this controller waits 30 seconds, rises for 5 seconds at low rate, then proceeds down 10 seconds, and repeats
 
@@ -49,6 +49,9 @@ class TestFlightController (object):
             self.drone_to_control.rise_at_rate(0)
 
 
+    def ready(self):
+
+        return
 
 
 

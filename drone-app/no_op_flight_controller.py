@@ -1,7 +1,7 @@
-from drone import Drone
+from drone import Drone, DroneControllerInterface
 
 
-class NoOpFlightController (object):
+class NoOpFlightController (DroneControllerInterface):
 
     def __init__(self, drone_to_control: Drone):
         self.drone_to_control = drone_to_control
@@ -9,4 +9,9 @@ class NoOpFlightController (object):
     def process_actions(self):
 
         return
+
+    def ready(self):
+
+        return
+
 

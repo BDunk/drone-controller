@@ -13,22 +13,25 @@ logger.setLevel(logging.INFO)
 
 def do_control():
     logger.info('Starting main control')
-    drone = Drone()
+    harpoon_lagoon = Drone()
 
-    #TODO: Swap start_sensor_log for start() if not operting in diagnostic mode (add command line switch?)
-
-    #drone.start();
-    drone.start_sensor_log()
 
 
     #TODO: Swap controller depending on control mode (add command line switch?)
     #controller = TestFlightController(drone)
-    controller = NoOpFlightController(drone)
+    controller = NoOpFlightController(harpoon_lagoon)
+
+    #TODO: Swap start_sensor_log for start() if not operting in diagnostic mode (add command line switch?)
+    #drone.start();
+    harpoon_lagoon.start_sensor_log()
+
+
+
 
     while True:
         # hack temp to accumulate samples
 
-        drone.process_sensors()
+        harpoon_lagoon.process_sensors()
         controller.process_actions()
 
 
