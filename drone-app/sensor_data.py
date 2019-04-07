@@ -1,5 +1,6 @@
 import logging
 import math
+import time
 from vector_utils import Vector
 
 from position_sensor_driver import PositionSensorDriver
@@ -7,6 +8,11 @@ from position_sensor_driver import PositionSensorDriver
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
+class SensorDataManager:
+
+    def calibration_complete(self):
+        raise NotImplementedError()
 
 
 class SensorData(object):
@@ -18,8 +24,11 @@ class SensorData(object):
 
     CALIBRATION_SECONDS = 2.0
 
-    def __init__(self):
+
+    def __init__(self, sensor_manager: SensorDataManager):
+        self.sensor_manager = sensor_manager
         self.acceleration_position_unit = PositionSensorDriver()
+        self.calibration_end_time = -1
 
         # all quantities except linear position require the drone to be perfectly upright,
         # stationary, and not accelerating.
@@ -67,13 +76,17 @@ class SensorData(object):
         logger.setLevel(logging.DEBUG)
 
 
-
+    ##
+    # After calibration time has expired, the sensor manager is called with calibration ready
     def start_calibration(self):
+
         self.linear_acceleration_offsets = [0, 0, 0]
         self.linear_calibration_count = 0
 
         self.angular_acceleration_offsets = [0, 0, 0]
         self.angular_acceleration_count = 0
+
+        self.calibration_end_time = time.time() + SensorData.CALIBRATION_SECONDS
 
         self.mode = SensorData.MODE_CALIBRATING
 
@@ -99,7 +112,6 @@ class SensorData(object):
 
         linear_acceleration,angular_acceleration, dt = acceleration_position_unit.readRawAcceleration(available_batches)
 
-        #this needs to be updated to represent an earth frame rather than a drone frame
         if self.mode == SensorData.MODE_READING:
             self.process_read(linear_acceleration,angular_acceleration,dt)
         elif self.mode == SensorData.MODE_DEBUGGING:
@@ -129,6 +141,10 @@ class SensorData(object):
             self.angular_acceleration_offsets,
             self.angular_acceleration_count
         )
+
+        current_time = time.time()
+        if current_time > self.calibration_end_time:
+            self.sensor_manager.calibration_complete()
 
         return
 

@@ -1,7 +1,7 @@
 
 from motor_matrix import MotorMatrix
-from sensor_data import SensorData
-import time
+from sensor_data import SensorData, SensorDataManager
+
 
 
 class DroneControllerInterface:
@@ -11,7 +11,7 @@ class DroneControllerInterface:
 
 
 
-class Drone (object):
+class Drone (SensorDataManager):
 
     #TODO: set constant to conservative value, affects the set point targeted when passing a percent.
     MAXIMUM_RISE_RATE_METERS_PER_SECOND = 1234
@@ -23,12 +23,10 @@ class Drone (object):
 
 
     def __init__(self):
-        self.is_calibrating = False
-        self.calibration_end_time = -1
 
         self.mode = Drone.MODE_STOPPED
         self.motor_matrix = MotorMatrix()
-        self.sensor_data = SensorData()
+        self.sensor_data = SensorData(self)
 
 
 
@@ -45,9 +43,12 @@ class Drone (object):
         self.mode = Drone.MODE_ACTIVE
         self.motor_matrix.start_your_engines()
 
-        self.is_calibrating = True
         self.sensor_data.start_calibration()
-        self.calibration_end_time = time.time() + Drone.CALIBRATION_SECONDS
+
+
+    def calibration_complete(self):
+        self.sensor_data.start_reading()
+        self.controller.ready()
 
 
 
@@ -62,11 +63,6 @@ class Drone (object):
         if self.mode == Drone.MODE_SENSOR_LOG:
             # No control functions, early return
             return
-
-        current_time = time.time()
-
-        if self.is_calibrating and current_time > self.calibration_end_time
-
 
         # TODO: adjust motor matrix
 
