@@ -32,6 +32,8 @@ class SensorData(object):
         self.angular_velocity = [0,0,0]
         self.angular_position = [0,0,0]
 
+        self.offsets=[0,0,0]
+
 
         self.hack_moving_average_velocity = [0,0,0]
 
@@ -58,6 +60,8 @@ class SensorData(object):
         else:
             logger.setLevel(logging.INFO)
 
+    def set_offsets(self,offsets):
+        
 
     # what are the scaling factors we want to use in this function?
     # my assumption based on an overview of what we saw before was that it gave gyro numbers

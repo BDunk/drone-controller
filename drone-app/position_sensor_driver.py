@@ -441,10 +441,6 @@ class PositionSensorDriver:
         #-------------------------------------------------------------------------------------------
         self.i2c.write8(self.__MPU6050_RA_FIFO_EN, 0x78)
 
-    def setGyroOffsets(self, gx, gy, gz):
-        self.gx_offset = gx
-        self.gy_offset = gy
-        self.gz_offset = gz
 
     def scaleSensors(self, ax, ay, az, gx, gy, gz):
 
