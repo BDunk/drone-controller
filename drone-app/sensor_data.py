@@ -24,10 +24,11 @@ class SensorData(object):
 
     CALIBRATION_SECONDS = 2.0
 
-
-    def __init__(self, sensor_manager: SensorDataManager):
+    def __init__(self, sensor_manager: SensorDataManager, position_unit=PositionSensorDriver()):
         self.sensor_manager = sensor_manager
-        self.acceleration_position_unit = PositionSensorDriver()
+
+        self.acceleration_position_unit = position_unit
+
         self.calibration_end_time = -1
 
         # all quantities except linear position require the drone to be perfectly upright,
@@ -42,10 +43,11 @@ class SensorData(object):
         # a lidar/gps or camera/gps/range finder combo could give very interesting data on both angular
         # and linear positional data in a way just accelerometer could not.
 
+        self.linear_acceleration = [0,0,0]
         self.linear_velocity = [0,0,0]
         self.linear_position = [0,0,0]
 
-
+        self.angular_acceleration = [0,0,0]
         self.angular_velocity = [0,0,0]
         self.angular_position = [0,0,0]
 
@@ -56,7 +58,6 @@ class SensorData(object):
         self.angular_acceleration_offsets = [0, 0, 0]
         self.angular_acceleration_count = 0
         self.angular_acceleration_scaling_factor=1
-
 
         self.mode=SensorData.MODE_UNINITIALIZED
 
@@ -75,8 +76,6 @@ class SensorData(object):
         self.mode = SensorData.MODE_DEBUGGING
         logger.setLevel(logging.DEBUG)
 
-
-    ##
     # After calibration time has expired, the sensor manager is called with calibration ready
     def start_calibration(self):
 
@@ -121,6 +120,11 @@ class SensorData(object):
         else:
             raise RuntimeError('Processed sensor data without a specific mode')
 
+    def get_linear_acceleration(self):
+        return self.linear_acceleration
+
+    def get_angular_acceleration(self):
+        return self.angular_acceleration
 
 
     ##
@@ -164,8 +168,11 @@ class SensorData(object):
         adjusted_scaled_linear_acceleration = Vector.scale(adjusted_linear_acceleration, self.linear_acceleration_scaling_factor)
 
         adjusted_angular_acceleration = Vector.add(angular_acceleration, self.angular_acceleration_offsets)
-        adjusted_scaled_angular_acceleration  = Vector.scale(adjusted_angular_acceleration, self.angular_acceleration_offsets)
+        adjusted_scaled_angular_acceleration = Vector.scale(adjusted_angular_acceleration, self.angular_acceleration_offsets)
 
+
+        self.linear_acceleration = adjusted_scaled_linear_acceleration
+        self.angular_acceleration = adjusted_scaled_angular_acceleration
 
 
         self.linear_acceleration=[a_components*self.linear_acceleration_scaling_factor for a_components in self.linear_acceleration]
