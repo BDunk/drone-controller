@@ -10,10 +10,10 @@ logger.setLevel(logging.INFO)
 
 class SensorData(object):
 
-    MODE_UNINITIALIZED=0
-    MODE_CALIBRATING=1
-    MODE_READING=2
-    MODE_DEBUG=3
+    MODE_UNINITIALIZED = 0
+    MODE_CALIBRATING = 1
+    MODE_READING = 2
+    MODE_DEBUGGING = 3
 
 
     def __init__(self):
@@ -38,7 +38,13 @@ class SensorData(object):
         self.angular_velocity = [0,0,0]
         self.angular_position = [0,0,0]
 
-        self.offsets=[0,0,0]
+        self.linear_acceleration_offsets = [0, 0, 0]
+        self.linear_calibration_count = 0
+
+        self.angular_acceleration_offsets = [0, 0, 0]
+        self.angular_acceleration_count = 0
+
+
 
         self.mode=SensorData.MODE_UNINITIALIZED
 
@@ -53,51 +59,90 @@ class SensorData(object):
 
         self.acceleration_position_unit.flushFIFO()
 
-    def set_debug_logging(self,should_debug_log: bool):
+    def start_debugging(self):
 
-        self.is_debug_logging = should_debug_log
-        if (should_debug_log):
-            logger.setLevel(logging.DEBUG)
-            self.acceleration_log = open("./accel.csv", "a+")
-            self.acceleration_log.write('ax, ay, az, dt\n')
-        else:
-            logger.setLevel(logging.INFO)
+        self.mode = SensorData.MODE_DEBUGGING
+        logger.setLevel(logging.DEBUG)
+
+
+
+    def start_calibration(self):
+        self.linear_acceleration_offsets = [0, 0, 0]
+        self.linear_calibration_count = 0
+
+        self.angular_acceleration_offsets = [0, 0, 0]
+        self.angular_acceleration_count = 0
+
+        self.mode = SensorData.MODE_CALIBRATING
+
+        return
+
+    def start_reading(self):
+        self.mode = SensorData.MODE_READING
+
+        return
 
 
 
     # what are the scaling factors we want to use in this function?
     # my assumption based on an overview of what we saw before was that it gave gyro numbers
     # that had odd bounds, and we likely want it radian
-    def updating_quantities(self):
+    def process_sensor(self):
         #assigns [ax,ay,az],[rax,ray,yaz],[t]
         acceleration_position_unit = self.acceleration_position_unit
         available_batches = acceleration_position_unit.numFIFOBatches()
 
-        if (available_batches <= 0):
+        if available_batches <= 0:
             return
-        
+
+        if available_batches >= PositionSensorDriver.MAX_BATCHES:
+            logger.critical('Exceeded max buffer size, likely lost data')
+            return
+
         linear_acceleration,angular_acceleration, dt = acceleration_position_unit.readFIFO(available_batches)
-
-
-        # updates linear position using the velocity it believes it was travelling
-        # over the period of time since acceleration was last updates
-        # then updates velocity using acceleration it has just read
 
         #this needs to be updated to represent an earth frame rather than a drone frame
         if self.mode == SensorData.MODE_READING:
             self.process_read(linear_acceleration,angular_acceleration,dt)
-
-        if self.mode==SensorData.MODE_DEBUG:
+        elif self.mode == SensorData.MODE_DEBUGGING:
             self.process_debug(linear_acceleration,angular_acceleration,dt)
-
-        if self.mode==SensorData.MODE_CALIBRATING:
+        elif self.mode == SensorData.MODE_CALIBRATING:
             self.process_calibrate(linear_acceleration,angular_acceleration,dt)
+        else:
+            raise RuntimeError('Processed sensor data without a specific mode')
 
 
 
+    ##
+    # proccess_calibrate assumes that the device is level and not moving (e.g. on the ground)
+    # It accumulates the accelerations and averages them to calibrate the sensors
 
     def process_calibrate(self, linear_acceleration, angular_acceleration,dt):
+
+
+        self.linear_acceleration_offsets, self.linear_calibration_count  = self.accumulate_calibration(
+            linear_acceleration,
+            self.linear_acceleration_offsets,
+            self.linear_calibration_count
+        )
+
+        self.angular_acceleration_offsets, self.angular_acceleration_count = self.accumulate_calibration(
+            angular_acceleration,
+            self.angular_acceleration_offsets,
+            self.angular_acceleration_count
+        )
+
         return
+
+    def accumulate_calibration(self, acceleration_batches, existing_calibration, existing_calibration_count):
+        for acceleration_batch in acceleration_batches:
+            existing_calibration_count += 1
+            existing_calibration = [
+                acceleration_batch[0] * (1 / existing_calibration_count) + existing_calibration[0],
+                acceleration_batch[1] * (1 / existing_calibration_count) + existing_calibration[1],
+                acceleration_batch[2] * (1 / existing_calibration_count) + existing_calibration[2],
+            ]
+        return existing_calibration, existing_calibration_count
 
     def process_read(self, linear_acceleration, angular_acceleration,dt):
         delta_linear_position = [v_component * dt for v_component in self.linear_velocity]
@@ -118,4 +163,7 @@ class SensorData(object):
         self.angular_velocity = [sum(v_component) for v_component in zip(self.angular_velocity, delta_angular_velocity)]
 
     def process_debug(self, linear_acceleration, angular_acceleration,dt):
-        self.acceleration_log.write('{}, {}, {}, {}\n'.format(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], dt))
+
+        #self.acceleration_log.write('{}, {}, {}, {}\n'.format(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], dt))
+
+        return

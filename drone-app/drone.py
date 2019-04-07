@@ -21,9 +21,10 @@ class Drone (object):
 
 
 
+
     def start_sensor_log(self):
         self.mode = Drone.MODE_SENSOR_LOG
-        self.sensor_data.set_debug_logging(True)
+        self.sensor_data.start_debugging()
 
     def start(self):
         self.mode = Drone.MODE_ACTIVE
@@ -36,7 +37,7 @@ class Drone (object):
         # It may be more testable and clear to separate the two functions by
         # reading the sensor directly here, and passing it back into a purely functional
         # piece of code to accumulate the implications
-        self.sensor_data.updating_quantities()
+        self.sensor_data.process_sensor()
 
         if self.mode == Drone.MODE_SENSOR_LOG:
             # No control functions, early return

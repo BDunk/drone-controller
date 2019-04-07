@@ -215,6 +215,8 @@ class PositionSensorDriver:
     __SCALE_GYRO = math.radians(2 * __RANGE_GYRO / 65536)
     __SCALE_ACCEL = 2 * __RANGE_ACCEL / 65536
 
+    MAX_BATCHES = int(round(512 / 12))
+
     def __init__(self, address=0x68, alpf=2, glpf=1):
         self.i2c = I2C(address)
         self.address = address
@@ -442,27 +444,5 @@ class PositionSensorDriver:
         self.i2c.write8(self.__MPU6050_RA_FIFO_EN, 0x78)
 
 
-    def scaleSensors(self, ax, ay, az, gx, gy, gz):
 
-        qax = (ax - self.ax_offset) * self.__SCALE_ACCEL
-        qay = (ay - self.ay_offset) * self.__SCALE_ACCEL
-        qaz = (az - self.az_offset) * self.__SCALE_ACCEL
-
-        qrx = (gx - self.gx_offset) * self.__SCALE_GYRO
-        qry = (gy - self.gy_offset) * self.__SCALE_GYRO
-        qrz = (gz - self.gz_offset) * self.__SCALE_GYRO
-
-        return qax, qay, qaz, qrx, qry, qrz
-
-
-
-    def getStats(self):
-        return (self.max_az * self.__SCALE_ACCEL,
-                self.min_az * self.__SCALE_ACCEL,
-                self.max_gx * self.__SCALE_GYRO,
-                self.min_gx * self.__SCALE_GYRO,
-                self.max_gy * self.__SCALE_GYRO,
-                self.min_gy * self.__SCALE_GYRO,
-                self.max_gz * self.__SCALE_GYRO,
-                self.min_gz * self.__SCALE_GYRO)
 
