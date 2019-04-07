@@ -10,6 +10,12 @@ logger.setLevel(logging.INFO)
 
 class SensorData(object):
 
+    MODE_UNINITIALIZED=0
+    MODE_CALIBRATING=1
+    MODE_READING=2
+    MODE_DEBUG=3
+
+
     def __init__(self):
         self.acceleration_position_unit = PositionSensorDriver()
 
@@ -34,8 +40,7 @@ class SensorData(object):
 
         self.offsets=[0,0,0]
 
-
-        self.hack_moving_average_velocity = [0,0,0]
+        self.mode=SensorData.MODE_UNINITIALIZED
 
         self.linear_scaling = 9.8
 
@@ -44,8 +49,6 @@ class SensorData(object):
         self.angular_min=0
 
         self.angular_scaling=2*math.pi/(self.angular_max-self.angular_min)
-
-        self.sample_count = 0
 
 
         self.acceleration_position_unit.flushFIFO()
@@ -60,8 +63,7 @@ class SensorData(object):
         else:
             logger.setLevel(logging.INFO)
 
-    def set_offsets(self,offsets):
-        
+
 
     # what are the scaling factors we want to use in this function?
     # my assumption based on an overview of what we saw before was that it gave gyro numbers
@@ -82,6 +84,22 @@ class SensorData(object):
         # then updates velocity using acceleration it has just read
 
         #this needs to be updated to represent an earth frame rather than a drone frame
+        if self.mode == SensorData.MODE_READING:
+            self.process_read(linear_acceleration,angular_acceleration,dt)
+
+        if self.mode==SensorData.MODE_DEBUG:
+            self.process_debug(linear_acceleration,angular_acceleration,dt)
+
+        if self.mode==SensorData.MODE_CALIBRATING:
+            self.process_calibrate(linear_acceleration,angular_acceleration,dt)
+
+
+
+
+    def process_calibrate(self, linear_acceleration, angular_acceleration,dt):
+        return
+
+    def process_read(self, linear_acceleration, angular_acceleration,dt):
         delta_linear_position = [v_component * dt for v_component in self.linear_velocity]
 
         self.linear_position = [sum(p_component) for p_component in zip(self.linear_position, delta_linear_position)]
@@ -89,20 +107,6 @@ class SensorData(object):
         delta_linear_velocity = [a_component * dt for a_component in linear_acceleration]
 
         self.linear_velocity = [sum(v_component) for v_component in zip(self.linear_velocity, delta_linear_velocity)]
-
-        self.hack_moving_average_velocity = [0.95 * v_component[0] + 0.5 * v_component[1] for v_component in zip(self.hack_moving_average_velocity, self.linear_velocity)]
-
-        if self.is_debug_logging:
-            self.acceleration_log.write('{}, {}, {}, {}\n'.format(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], dt))
-
-        self.sample_count += 1
-
-        if self.sample_count % 20 == 0:
-            logger.info("Batches this pass {}".format(available_batches))
-
-        # if self.is_debug_logging and self.sample_count % 20 == 0:
-        #    logger.debug("mav every 20 {}".format(self.hack_moving_average_velocity))
-
 
         # same function as lines above, but updating rotation
         delta_angular_position = [v_component * dt for v_component in self.angular_velocity]
@@ -113,4 +117,5 @@ class SensorData(object):
 
         self.angular_velocity = [sum(v_component) for v_component in zip(self.angular_velocity, delta_angular_velocity)]
 
-
+    def process_debug(self, linear_acceleration, angular_acceleration,dt):
+        self.acceleration_log.write('{}, {}, {}, {}\n'.format(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], dt))
