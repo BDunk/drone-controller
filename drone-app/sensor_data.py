@@ -41,11 +41,11 @@ class SensorData(object):
 
         self.linear_acceleration_offsets = [0, 0, 0]
         self.linear_calibration_count = 0
-        self.linear_acceleration_scaling_factor=[1,1,1]
+        self.linear_acceleration_scaling_factor=1
 
         self.angular_acceleration_offsets = [0, 0, 0]
         self.angular_acceleration_count = 0
-        self.angular_acceleration_scaling_factor[1,1,1]
+        self.angular_acceleration_scaling_factor=1
 
 
         self.mode=SensorData.MODE_UNINITIALIZED
@@ -147,10 +147,11 @@ class SensorData(object):
 
     def process_read(self, linear_acceleration, angular_acceleration,dt):
 
-        #self.linear_acceleration
-        #
-        #
-        #
+        self.linear_acceleration=[sum(a_components) for a_components in zip(self.linear_acceleration,self.linear_acceleration_offsets)]
+        self.linear_acceleration=[a_components*self.linear_acceleration_scaling_factor for a_components in self.linear_acceleration]
+
+        self.angular_acceleration=[sum(a_components) for a_components in zip(self.angular_acceleration,self.angular_acceleration_offsets)]
+        self.angular_acceleration=[a_components*self.angular_acceleration_scaling_factor for a_components in self.angular_acceleration]
 
         delta_linear_position = [v_component * dt for v_component in self.linear_velocity]
 
