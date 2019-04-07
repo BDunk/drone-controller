@@ -1,5 +1,6 @@
 import logging
 import math
+from vector_utils import Vector
 
 from position_sensor_driver import PositionSensorDriver
 
@@ -31,11 +32,11 @@ class SensorData(object):
         # it, and instead we use lidar/range finder.
         # a lidar/gps or camera/gps/range finder combo could give very interesting data on both angular
         # and linear positional data in a way just accelerometer could not.
-        self.linear_acceleration = [0,0,0]
+
         self.linear_velocity = [0,0,0]
         self.linear_position = [0,0,0]
 
-        self.angular_acceleration = [0,0,0]
+
         self.angular_velocity = [0,0,0]
         self.angular_position = [0,0,0]
 
@@ -84,12 +85,8 @@ class SensorData(object):
         return
 
 
-
-    # what are the scaling factors we want to use in this function?
-    # my assumption based on an overview of what we saw before was that it gave gyro numbers
-    # that had odd bounds, and we likely want it radian
     def process_sensor(self):
-        #assigns [ax,ay,az],[rax,ray,yaz],[t]
+
         acceleration_position_unit = self.acceleration_position_unit
         available_batches = acceleration_position_unit.numFIFOBatches()
 
@@ -100,7 +97,7 @@ class SensorData(object):
             logger.critical('Exceeded max buffer size, likely lost data')
             return
 
-        linear_acceleration,angular_acceleration, dt = acceleration_position_unit.readFIFO(available_batches)
+        linear_acceleration,angular_acceleration, dt = acceleration_position_unit.readRawAcceleration(available_batches)
 
         #this needs to be updated to represent an earth frame rather than a drone frame
         if self.mode == SensorData.MODE_READING:
@@ -147,7 +144,14 @@ class SensorData(object):
 
     def process_read(self, linear_acceleration, angular_acceleration,dt):
 
-        self.linear_acceleration=[sum(a_components) for a_components in zip(self.linear_acceleration,self.linear_acceleration_offsets)]
+        adjusted_linear_acceleration = Vector.add(linear_acceleration, self.linear_acceleration_offsets)
+        adjusted_scaled_linear_acceleration = Vector.scale(adjusted_linear_acceleration, self.linear_acceleration_scaling_factor)
+
+        adjusted_angular_acceleration = Vector.add(angular_acceleration, self.angular_acceleration_offsets)
+        adjusted_scaled_angular_acceleration  = Vector.scale(adjusted_angular_acceleration, self.angular_acceleration_offsets)
+
+
+
         self.linear_acceleration=[a_components*self.linear_acceleration_scaling_factor for a_components in self.linear_acceleration]
 
         self.angular_acceleration=[sum(a_components) for a_components in zip(self.angular_acceleration,self.angular_acceleration_offsets)]

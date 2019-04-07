@@ -373,7 +373,7 @@ class PositionSensorDriver:
         fifo_batches = int(fifo_bytes / 12)  # This rounds down
         return fifo_batches
 
-    def readFIFO(self, fifo_batches):
+    def readRawAcceleration(self, fifo_batches):
         #-------------------------------------------------------------------------------------------
         # Read n x 12 bytes of FIFO data averaging, and return the averaged values and inferred time
         # based upon the sampling rate and the number of samples.
