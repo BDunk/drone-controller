@@ -157,7 +157,6 @@ class SensorData(object):
 
     def accumulate_calibration(self, acceleration_batch, existing_calibration, existing_calibration_count):
 
-        logger.info("accumulating {} to {} count {}".format(acceleration_batch, existing_calibration, existing_calibration_count))
         new_calibration_count = existing_calibration_count + 1
         # Negated to reflect the desired cancelling effect
         new_factor = -1 / new_calibration_count
@@ -175,7 +174,6 @@ class SensorData(object):
 
         adjusted_linear_acceleration = Vector.add(linear_acceleration, self.linear_acceleration_offsets)
 
-        logger.info("reading lin: {} and adjusted lin {}, scale {}".format(linear_acceleration, adjusted_linear_acceleration, self.linear_acceleration_scaling_factor))
         adjusted_scaled_linear_acceleration = Vector.scale(
             adjusted_linear_acceleration,
             self.linear_acceleration_scaling_factor
