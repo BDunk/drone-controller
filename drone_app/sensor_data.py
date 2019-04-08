@@ -56,11 +56,11 @@ class SensorData(object):
 
         self.linear_acceleration_offsets = [0, 0, 0]
         self.linear_calibration_count = 0
-        self.linear_acceleration_scaling_factor=1
+        self.linear_acceleration_scaling_factor=1.0
 
         self.angular_acceleration_offsets = [0, 0, 0]
         self.angular_acceleration_count = 0
-        self.angular_acceleration_scaling_factor=1
+        self.angular_acceleration_scaling_factor=1.0
 
         self.mode=SensorData.MODE_UNINITIALIZED
 
@@ -171,10 +171,18 @@ class SensorData(object):
     def process_read(self, linear_acceleration, angular_acceleration,dt):
 
         adjusted_linear_acceleration = Vector.add(linear_acceleration, self.linear_acceleration_offsets)
-        adjusted_scaled_linear_acceleration = Vector.scale(adjusted_linear_acceleration, self.linear_acceleration_scaling_factor)
+
+        logger.info("reading lin: {} and adjusted lin {}, scale {}".format(linear_acceleration, adjusted_linear_acceleration, self.linear_acceleration_scaling_factor))
+        adjusted_scaled_linear_acceleration = Vector.scale(
+            adjusted_linear_acceleration,
+            self.linear_acceleration_scaling_factor
+        )
 
         adjusted_angular_acceleration = Vector.add(angular_acceleration, self.angular_acceleration_offsets)
-        adjusted_scaled_angular_acceleration = Vector.scale(adjusted_angular_acceleration, self.angular_acceleration_offsets)
+        adjusted_scaled_angular_acceleration = Vector.scale(
+            adjusted_angular_acceleration,
+            self.angular_acceleration_scaling_factor
+        )
 
 
         self.linear_acceleration = adjusted_scaled_linear_acceleration
