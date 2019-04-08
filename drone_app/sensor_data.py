@@ -24,7 +24,10 @@ class SensorData(object):
 
     CALIBRATION_SECONDS = 2.0
 
-    def __init__(self, sensor_manager: SensorDataManager, position_unit=PositionSensorDriver()):
+    def __init__(self, sensor_manager: SensorDataManager, position_unit=None):
+        if not position_unit:
+            position_unit = PositionSensorDriver()
+
         self.sensor_manager = sensor_manager
 
         self.acceleration_position_unit = position_unit
@@ -163,6 +166,8 @@ class SensorData(object):
         return existing_calibration, existing_calibration_count
 
     def process_read(self, linear_acceleration, angular_acceleration,dt):
+
+        logger.info("Found values {} and {} ".format(linear_acceleration, self.linear_acceleration_offsets))
 
         adjusted_linear_acceleration = Vector.add(linear_acceleration, self.linear_acceleration_offsets)
         adjusted_scaled_linear_acceleration = Vector.scale(adjusted_linear_acceleration, self.linear_acceleration_scaling_factor)

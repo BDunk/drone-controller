@@ -1,4 +1,11 @@
-import smbus
+#TODO: conditionally import smbus based
+#import os
+#os.uname()
+try:
+    import smbus
+except ImportError:
+    from .smbus_mock import smbus_mock as smbus
+
 
 class I2C:
 

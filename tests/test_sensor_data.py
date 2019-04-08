@@ -1,25 +1,41 @@
 from unittest import TestCase
 import time
-
+import logging
+import sys
 
 from drone_app.sensor_data import SensorData, SensorDataManager
+
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logger = logging.getLogger()
+
+logger.setLevel(logging.INFO)
 
 
 class PositionSensorDriverHelper:
 
     def __init__(self):
         self.return_accel = None
+        self.next_offset = -1
 
 
     def set_acceleration_returns(self, return_accel):
         self.return_accel = return_accel
+        self.next_offset = 0
 
     def numFIFOBatches(self):
-        return len(self.return_accel)
+        return 1
 
     def readRawAcceleration(self, fifo_batches):
-        return self.return_accel, self.return_accel, 1.0
+        number_of_points = len(self.return_accel)
+        logger.info("Number of points {}".format(number_of_points))
+        point_to_return = self.return_accel[self.next_offset]
+        self.next_offset += 1
+        self.next_offset = self.next_offset % number_of_points
+        return point_to_return
 
+    def flushFIFO(self):
+        return
 
 
 
@@ -41,8 +57,8 @@ class TestSensorData(TestCase, SensorDataManager):
 
         #set up the drive to return accelerations that average to 2
         calibration_data_average_2 = [
-            [1,2,5],
-            [3,0,-3],
+            (1,2,5),
+            (3,0,-3),
         ]
 
         self.mock_sensor.set_acceleration_returns(calibration_data_average_2)
@@ -52,7 +68,7 @@ class TestSensorData(TestCase, SensorDataManager):
 
 
         # wait for the calibration to complete (set in callback)
-        while self.is_calibration_complete:
+        while not self.is_calibration_complete:
             time.sleep(0.1) # NOTE: to complete faster, can use freeze time and force specific times...
             sensor_data.process_sensor()
 
@@ -61,7 +77,7 @@ class TestSensorData(TestCase, SensorDataManager):
 
         # test inputs should be adjusted by calibration
         test_data = [
-            [1,1,1],
+            (1,1,1),
         ]
 
         self.mock_sensor.set_acceleration_returns(test_data)
