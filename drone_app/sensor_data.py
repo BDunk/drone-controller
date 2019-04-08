@@ -114,8 +114,6 @@ class SensorData(object):
 
         linear_acceleration,angular_acceleration, dt = acceleration_position_unit.readRawAcceleration(available_batches)
 
-        logger.info("Found values {} and {} ".format(linear_acceleration, angular_acceleration))
-
         if self.mode == SensorData.MODE_READING:
             self.process_read(linear_acceleration,angular_acceleration,dt)
         elif self.mode == SensorData.MODE_DEBUGGING:
@@ -158,15 +156,20 @@ class SensorData(object):
         return
 
     def accumulate_calibration(self, acceleration_batch, existing_calibration, existing_calibration_count):
-        logger.info("calibration objects: {}, {}, {}".format(acceleration_batch, existing_calibration, existing_calibration_count))
 
-        existing_calibration_count += 1
-        existing_calibration = [
-            acceleration_batch[0] * (1 / existing_calibration_count) + existing_calibration[0],
-            acceleration_batch[1] * (1 / existing_calibration_count) + existing_calibration[1],
-            acceleration_batch[2] * (1 / existing_calibration_count) + existing_calibration[2],
-        ]
-        return existing_calibration, existing_calibration_count
+        logger.info("accumulating {} to {} count {}".format(acceleration_batch, existing_calibration, existing_calibration_count))
+        new_calibration_count = existing_calibration_count + 1
+        # Negated to reflect the desired cancelling effect
+        new_factor = -1.0 / new_calibration_count
+        old_factor = float((new_calibration_count - 1) / new_calibration_count)
+
+        new_calibration = Vector.add(
+            Vector.scale(acceleration_batch, new_factor),
+            Vector.scale(existing_calibration, old_factor),
+        )
+
+
+        return new_calibration, new_calibration_count
 
     def process_read(self, linear_acceleration, angular_acceleration,dt):
 

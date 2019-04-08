@@ -57,8 +57,8 @@ class TestSensorData(TestCase, SensorDataManager):
 
         #set up the drive to return accelerations that average to 2
         calibration_data_average_2 = [
-            (1,2,5),
-            (3,0,-3),
+            (1,2,7),
+            (3,2,-3),
         ]
 
         self.mock_sensor.set_acceleration_returns(calibration_data_average_2)
@@ -91,7 +91,7 @@ class TestSensorData(TestCase, SensorDataManager):
 
         for ii in range(3):
             self.assertAlmostEqual(-1, linear_accel[ii], msg='calibration should be close to -1 ')
-            self.assertAlmostEqual(-1, angular_accel, msg='angular shoudl be close to -1')
+            self.assertAlmostEqual(-1, angular_accel[ii], msg='angular should be close to -1')
 
 
 
