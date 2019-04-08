@@ -56,11 +56,11 @@ class SensorData(object):
 
         self.linear_acceleration_offsets = [0, 0, 0]
         self.linear_calibration_count = 0
-        self.linear_acceleration_scaling_factor=1.0
+        self.linear_acceleration_scaling_factor=1
 
         self.angular_acceleration_offsets = [0, 0, 0]
         self.angular_acceleration_count = 0
-        self.angular_acceleration_scaling_factor=1.0
+        self.angular_acceleration_scaling_factor=1
 
         self.mode=SensorData.MODE_UNINITIALIZED
 
@@ -160,8 +160,8 @@ class SensorData(object):
         logger.info("accumulating {} to {} count {}".format(acceleration_batch, existing_calibration, existing_calibration_count))
         new_calibration_count = existing_calibration_count + 1
         # Negated to reflect the desired cancelling effect
-        new_factor = -1.0 / new_calibration_count
-        old_factor = float((new_calibration_count - 1) / new_calibration_count)
+        new_factor = -1 / new_calibration_count
+        old_factor = ((new_calibration_count - 1) / new_calibration_count)
 
         new_calibration = Vector.add(
             Vector.scale(acceleration_batch, new_factor),
@@ -191,11 +191,6 @@ class SensorData(object):
         self.linear_acceleration = adjusted_scaled_linear_acceleration
         self.angular_acceleration = adjusted_scaled_angular_acceleration
 
-
-        self.linear_acceleration=[a_components*self.linear_acceleration_scaling_factor for a_components in self.linear_acceleration]
-
-        self.angular_acceleration=[sum(a_components) for a_components in zip(self.angular_acceleration,self.angular_acceleration_offsets)]
-        self.angular_acceleration=[a_components*self.angular_acceleration_scaling_factor for a_components in self.angular_acceleration]
 
         delta_linear_position = [v_component * dt for v_component in self.linear_velocity]
 
