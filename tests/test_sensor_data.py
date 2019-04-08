@@ -28,11 +28,11 @@ class PositionSensorDriverHelper:
 
     def readRawAcceleration(self, fifo_batches):
         number_of_points = len(self.return_accel)
-        logger.info("Number of points {}".format(number_of_points))
+
         point_to_return = self.return_accel[self.next_offset]
         self.next_offset += 1
         self.next_offset = self.next_offset % number_of_points
-        return point_to_return
+        return point_to_return, point_to_return, 1.0
 
     def flushFIFO(self):
         return

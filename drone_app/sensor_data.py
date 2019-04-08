@@ -114,6 +114,8 @@ class SensorData(object):
 
         linear_acceleration,angular_acceleration, dt = acceleration_position_unit.readRawAcceleration(available_batches)
 
+        logger.info("Found values {} and {} ".format(linear_acceleration, angular_acceleration))
+
         if self.mode == SensorData.MODE_READING:
             self.process_read(linear_acceleration,angular_acceleration,dt)
         elif self.mode == SensorData.MODE_DEBUGGING:
@@ -155,19 +157,18 @@ class SensorData(object):
 
         return
 
-    def accumulate_calibration(self, acceleration_batches, existing_calibration, existing_calibration_count):
-        for acceleration_batch in acceleration_batches:
-            existing_calibration_count += 1
-            existing_calibration = [
-                acceleration_batch[0] * (1 / existing_calibration_count) + existing_calibration[0],
-                acceleration_batch[1] * (1 / existing_calibration_count) + existing_calibration[1],
-                acceleration_batch[2] * (1 / existing_calibration_count) + existing_calibration[2],
-            ]
+    def accumulate_calibration(self, acceleration_batch, existing_calibration, existing_calibration_count):
+        logger.info("calibration objects: {}, {}, {}".format(acceleration_batch, existing_calibration, existing_calibration_count))
+
+        existing_calibration_count += 1
+        existing_calibration = [
+            acceleration_batch[0] * (1 / existing_calibration_count) + existing_calibration[0],
+            acceleration_batch[1] * (1 / existing_calibration_count) + existing_calibration[1],
+            acceleration_batch[2] * (1 / existing_calibration_count) + existing_calibration[2],
+        ]
         return existing_calibration, existing_calibration_count
 
     def process_read(self, linear_acceleration, angular_acceleration,dt):
-
-        logger.info("Found values {} and {} ".format(linear_acceleration, self.linear_acceleration_offsets))
 
         adjusted_linear_acceleration = Vector.add(linear_acceleration, self.linear_acceleration_offsets)
         adjusted_scaled_linear_acceleration = Vector.scale(adjusted_linear_acceleration, self.linear_acceleration_scaling_factor)
