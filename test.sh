@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 
-python3 -m unittest discover -v -p *.py -s ./tests
+# python3 -m unittest discover -v -p *.py -s ./tests
+python3 -m unittest discover --verbose --start-directory ./tests
+
 exit_code=$?
 echo "Tests exited with code: $exit_code"
 

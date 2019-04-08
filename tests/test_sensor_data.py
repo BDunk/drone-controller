@@ -2,7 +2,7 @@ from unittest import TestCase
 import time
 
 
-from ..drone-app.sensor_data import SensorData, SensorDataManager
+from drone_app.sensor_data import SensorData, SensorDataManager
 
 
 class PositionSensorDriverHelper:

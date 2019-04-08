@@ -19,7 +19,7 @@ import math
 
 import logging
 
-from i2c import I2C
+from .i2c import I2C
 
 global adc_frequency
 global sampling_rate
