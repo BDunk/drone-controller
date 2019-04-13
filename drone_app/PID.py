@@ -26,7 +26,7 @@ class PID:
         self.first=True
 
     def change_set_point(self,new_setpoint):
-        self.setpoint=new_setpoint
+        self.set_point=new_setpoint
 
     def change_current_point(self,new_currentpoint):
         self.current_point=new_currentpoint
