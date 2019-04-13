@@ -5,9 +5,9 @@ class PID:
     def __init__(self):
         self.motor_output=0
 
-        self.proportional_gain=1
-        self.integral_gain=1
-        self.derivative_gain=1
+        self.proportional_gain=0.1
+        self.integral_gain=0
+        self.derivative_gain=0
 
         self.error=0
         self.error_old=0
