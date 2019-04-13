@@ -10,23 +10,55 @@ class PID:
         self.derivative_gain=1
 
         self.error=0
+        self.error_old=0
+
+        self.PID_derror=0
+
+        self.integral_term=0
+        self.derivative_term=0
 
         self.set_point=0
         self.current_point=0
 
-        self.PID_time=0
+        self.PID_old_time=0
         self.PID_dt=0
 
         self.first=True
+
+    def change_set_point(self,new_setpoint):
+        self.setpoint=new_setpoint
 
     def calculate(self):
 
         #i've never written something that feels so stupid, this should be in the initial call, not here
         if self.first:
-            self.PID_time=time()
+            self.PID_old_time=time.time()
+            self.error_old=self.set_point-self.current_point
             self.first=False
 
-        
+        #calculates dt
+        self.PID_dt=time.time()-self.PID_old_time
+
+        #calculates error
+        self.error=self.set_point-self.current_point
+
+        #calculates difference in error since last time
+        self.PID_derror=self.error-self.error_old
+
+        #calculates integral term
+        self.integral_term=self.integral_term+(self.PID_dt*self.error)
+
+        #calculates derivative term
+        self.derivative_term=self.PID_derror/self.PID_dt
+
+        #calculates motor_output using PID equation
+        self.motor_output=(self.proportional_gain*self.error)+(self.integral_gain*self.integral_term)+(self.derivative_gain*self.derivative_term)
+
+
+        #records current error for next loop
+        self.error_old=self.error
+
+        return time.time(),self.motor_output
 
 
 
@@ -36,7 +68,8 @@ class PID:
 
 
 
-    return MV
+
+
     #TODO: Decide on what PID controls
     #I assume it is going to be controlling velocities
 
