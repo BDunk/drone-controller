@@ -28,6 +28,8 @@ class PID:
     def change_set_point(self,new_setpoint):
         self.setpoint=new_setpoint
 
+    def change_current_point(self,new_currentpoint):
+        self.current_point=new_currentpoint
     def calculate(self):
 
         #i've never written something that feels so stupid, this should be in the initial call, not here
@@ -58,7 +60,7 @@ class PID:
         #records current error for next loop
         self.error_old=self.error
 
-        return time.time(),self.motor_output
+        return self.motor_output
 
 
 
