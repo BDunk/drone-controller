@@ -20,7 +20,7 @@ class TestSensorData(TestCase):
 
 
     def test_change_impulse(self):
-        testPID=PID(0.1,0,0)
+        testPID=PID(1.85,0,0)
 
         time_old=time.time()
         time_difference = time.time() - time_old
@@ -36,9 +36,10 @@ class TestSensorData(TestCase):
 
             time_difference=time.time()-time_old
 
-            logger.info('Set Point: {}, Current Point {}, Adjustment {}'.format(testPID.set_point,
+            # I really want to make a graph of this and I really just don't know how to interact with files like that
+            logger.info('Set Point: {}, Current Point {}, Adjustment {},Time {}'.format(testPID.set_point,
                                                                                  testPID.current_point,
-                                                                                 pid_adjustment))
+                                                                                 pid_adjustment,time.time()))
 
         #TODO: Goal is to be able to confirm something as having ended up correct
         # TODO: So normally you would want to end up with some combination of asserts
