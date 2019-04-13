@@ -30,7 +30,7 @@ class TestSensorData(TestCase):
 
         while time_difference < 10:
             pid_adjustment = testPID.calculate()  #TODO: Sometimes this method throws a division by zero, I expect it occurs if the time rounds to the same value (race condition)
-            simulated_new_point = testPID.current_point-pid_adjustment
+            simulated_new_point = testPID.current_point+pid_adjustment
             # NOTE: We can make this test more comprehensive by making the simulated_new_point more comprehensive a simulation
             testPID.change_current_point(simulated_new_point)
 
