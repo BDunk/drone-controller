@@ -2,7 +2,7 @@ import time
 
 class PID:
 
-    def _init_(self):
+    def __init__(self):
         self.motor_output=0
 
         self.proportional_gain=1
@@ -30,6 +30,7 @@ class PID:
 
     def change_current_point(self,new_currentpoint):
         self.current_point=new_currentpoint
+
     def calculate(self):
 
         #i've never written something that feels so stupid, this should be in the initial call, not here
@@ -39,6 +40,7 @@ class PID:
             self.first=False
 
         #calculates dt
+        #TODO: I think we shoul pass dt into this directly from the sensor somehow, to not rely on os clock precision
         self.PID_dt=time.time()-self.PID_old_time
 
         #calculates error
