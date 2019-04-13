@@ -21,7 +21,7 @@ class PID:
         self.current_point=0
 
         self.PID_old_time=0
-        self.PID_dt=0
+
 
         self.first=True
 
@@ -41,7 +41,10 @@ class PID:
 
         #calculates dt
         #TODO: I think we shoul pass dt into this directly from the sensor somehow, to not rely on os clock precision
-        self.PID_dt=time.time()-self.PID_old_time
+        time_now = time.time()
+        PID_dt=time_now-self.PID_old_time
+        self.PID_old_time = time_now
+
 
         #calculates error
         self.error=self.set_point-self.current_point
@@ -50,10 +53,10 @@ class PID:
         self.PID_derror=self.error-self.error_old
 
         #calculates integral term
-        self.integral_term=self.integral_term+(self.PID_dt*self.error)
+        self.integral_term=self.integral_term+(PID_dt*self.error)
 
         #calculates derivative term
-        self.derivative_term=self.PID_derror/self.PID_dt
+        self.derivative_term=self.PID_derror/PID_dt
 
         #calculates motor_output using PID equation
         self.motor_output=(self.proportional_gain*self.error)+(self.integral_gain*self.integral_term)+(self.derivative_gain*self.derivative_term)
