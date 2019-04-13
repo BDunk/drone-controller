@@ -20,7 +20,7 @@ class TestSensorData(TestCase):
 
 
     def test_change_impulse(self):
-        testPID=PID()
+        testPID=PID(0.1,0,0)
 
         time_old=time.time()
         time_difference = time.time() - time_old

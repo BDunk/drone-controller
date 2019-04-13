@@ -2,12 +2,12 @@ import time
 
 class PID:
 
-    def __init__(self):
+    def __init__(self,proportional, integral,derivative):
         self.motor_output=0
 
-        self.proportional_gain=0.05
-        self.integral_gain=0.01
-        self.derivative_gain=0.01
+        self.proportional_gain=proportional
+        self.integral_gain=integral
+        self.derivative_gain=derivative
 
         self.error=0
         self.error_old=0
