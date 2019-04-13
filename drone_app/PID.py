@@ -6,7 +6,7 @@ class PID:
         self.motor_output=0
 
         self.proportional_gain=0.1
-        self.integral_gain=0
+        self.integral_gain=0.05
         self.derivative_gain=0
 
         self.error=0
