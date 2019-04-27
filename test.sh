@@ -12,6 +12,6 @@ if [ $exit_code -ne 0 ]; then
     exit $exit_code
 fi
 
-gnuplot test_PID.plot > test_PID.jpeg
+gnuplot test_PID.plot > test_PID.png
 
-open test_PID.jpeg
+open test_PID.png
