@@ -2,7 +2,7 @@
 from motor_matrix import MotorMatrix
 from sensor_data import SensorData, SensorDataManager
 from PID import PID
-
+import math
 
 class DroneControllerInterface:
 
@@ -13,13 +13,17 @@ class DroneControllerInterface:
 
 class Drone (SensorDataManager):
 
-    #TODO: set constant to conservative value, affects the set point targeted when passing a percent.
-    MAXIMUM_RISE_RATE_METERS_PER_SECOND = 1234
+
+    MAXIMUM_RISE_RATE_METERS_PER_SECOND = 0.5
+    MAXIMUM_TRANSLATE_RATE_METERS_PER_SECOND = 0.5
+    MAXIMUM_RADIANS_PER_SECOND = 2*math.pi/5
+
 
     MODE_STOPPED = 0
     MODE_SENSOR_LOG = 1
     MODE_ACTIVE = 2
 
+    #TODO: add PID here for control
 
 
     def __init__(self):
@@ -86,12 +90,12 @@ class Drone (SensorDataManager):
 
         raise NotImplementedError()
 
-    def right_at_rate(self, right_percent):
+    def translate_right_at_rate(self, right_percent):
 
         raise NotImplementedError()
 
-    def yaw_right_at(self, yaw_right_percent):
-        raise NotImplementedError
+    def rotate_clockwise_at(self, rotate_clockwise_radians):
+        raise NotImplementedError()
 
     def cleanup(self):
         self.motor_matrix.cleanup()
