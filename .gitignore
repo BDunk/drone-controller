@@ -108,5 +108,5 @@ venv.bak/
 
 #graphical test outputs
 pid_response.csv
-test_PID.jpeg
+test_PID.png
 test_PID
