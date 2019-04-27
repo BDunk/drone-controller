@@ -189,22 +189,20 @@ class SensorData(object):
         self.linear_acceleration = adjusted_scaled_linear_acceleration
         self.angular_acceleration = adjusted_scaled_angular_acceleration
 
-
+        #finds change in linear position and increments linear position by that amount
         delta_linear_position = Vector.scale(self.linear_velocity,dt)
-
         self.linear_position = Vector.add(self.linear_position, delta_linear_position)
 
+        #finds change in linear velocity and increments linear velocity by that amount
         delta_linear_velocity = Vector.scale(self.linear_acceleration,dt)
-
         self.linear_velocity = Vector.add(self.linear_velocity,delta_linear_velocity)
 
-        #for angular
+        #finds change in angular position and increments angular position by that amount
         delta_angular_position = Vector.scale(self.angular_velocity,dt)
-
         self.angular_position = Vector.add(self.angular_position, delta_angular_position)
 
+        #finds change in angular velocity and increments angular velocity by that amount
         delta_angular_velocity = Vector.scale(self.angular_acceleration,dt)
-
         self.angular_velocity = Vector.add(self.angular_velocity,delta_angular_velocity)
 
 
