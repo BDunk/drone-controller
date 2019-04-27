@@ -170,16 +170,16 @@ class SensorData(object):
 
         return new_calibration, new_calibration_count
 
-    def process_read(self, linear_acceleration, angular_acceleration,dt):
+    def process_read(self, raw_linear_acceleration, raw_angular_acceleration, dt):
 
-        adjusted_linear_acceleration = Vector.add(linear_acceleration, self.linear_acceleration_offsets)
+        adjusted_linear_acceleration = Vector.subtract(raw_linear_acceleration, self.linear_acceleration_offsets)
 
         adjusted_scaled_linear_acceleration = Vector.scale(
             adjusted_linear_acceleration,
             self.linear_acceleration_scaling_factor
         )
 
-        adjusted_angular_acceleration = Vector.add(angular_acceleration, self.angular_acceleration_offsets)
+        adjusted_angular_acceleration = Vector.subtract(raw_angular_acceleration, self.angular_acceleration_offsets)
         adjusted_scaled_angular_acceleration = Vector.scale(
             adjusted_angular_acceleration,
             self.angular_acceleration_scaling_factor
@@ -190,22 +190,23 @@ class SensorData(object):
         self.angular_acceleration = adjusted_scaled_angular_acceleration
 
 
-        delta_linear_position = [v_component * dt for v_component in self.linear_velocity]
+        delta_linear_position = Vector.scale(self.linear_velocity,dt)
 
-        self.linear_position = [sum(p_component) for p_component in zip(self.linear_position, delta_linear_position)]
+        self.linear_position = Vector.add(self.linear_position, delta_linear_position)
 
-        delta_linear_velocity = [a_component * dt for a_component in linear_acceleration]
+        delta_linear_velocity = Vector.scale(self.linear_acceleration,dt)
 
-        self.linear_velocity = [sum(v_component) for v_component in zip(self.linear_velocity, delta_linear_velocity)]
+        self.linear_velocity = Vector.add(self.linear_velocity,delta_linear_velocity)
 
-        # same function as lines above, but updating rotation
-        delta_angular_position = [v_component * dt for v_component in self.angular_velocity]
+        #for angular
+        delta_angular_position = Vector.scale(self.angular_velocity,dt)
 
-        self.angular_position = [sum(p_component) for p_component in zip(self.angular_position, delta_angular_position)]
+        self.angular_position = Vector.add(self.angular_position, delta_angular_position)
 
-        delta_angular_velocity = [a_component * dt for a_component in angular_acceleration]
+        delta_angular_velocity = Vector.scale(self.angular_acceleration,dt)
 
-        self.angular_velocity = [sum(v_component) for v_component in zip(self.angular_velocity, delta_angular_velocity)]
+        self.angular_velocity = Vector.add(self.angular_velocity,delta_angular_velocity)
+
 
     def process_debug(self, linear_acceleration, angular_acceleration,dt):
 

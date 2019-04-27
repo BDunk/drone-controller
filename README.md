@@ -50,6 +50,7 @@ TODO: Full deflection and senstivity calculation is not occuring
 ## Testing
 
 Run `./test.sh` to trigger test cases
+Must install gnuplot to see test graphs
 
 
 ## References
