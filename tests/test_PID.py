@@ -25,7 +25,7 @@ class TestSensorData(TestCase):
     def setUp(self):
         self.pid_response_handle = open('pid_response.csv', 'w')
         self.pid_response_writer = csv.writer(self.pid_response_handle)
-        self.pid_response_writer.writerow(['timestamp','value_at_timestamp'])
+        #self.pid_response_writer.writerow(['timestamp','value_at_timestamp'])
 
 
     def tearDown(self):
