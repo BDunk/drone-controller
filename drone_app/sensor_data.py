@@ -47,11 +47,11 @@ class SensorData(object):
         # and linear positional data in a way just accelerometer could not.
 
         self.linear_acceleration = [0,0,0]
-        self.linear_velocity = [0,0,0]
+        self._linear_velocity = [0, 0, 0]
         self.linear_position = [0,0,0]
 
         self.angular_acceleration = [0,0,0]
-        self.angular_velocity = [0,0,0]
+        self._angular_velocity = [0, 0, 0]
         self.angular_position = [0,0,0]
 
         self.linear_acceleration_offsets = [0, 0, 0]
@@ -95,6 +95,7 @@ class SensorData(object):
         return
 
     def start_reading(self):
+
         self.mode = SensorData.MODE_READING
 
         return
@@ -130,14 +131,16 @@ class SensorData(object):
         return self.angular_acceleration
 
 
-    ##
-    # proccess_calibrate assumes that the device is level and not moving (e.g. on the ground)
+    ###
+    #
+    # process_calibrate assumes that the device is level and not moving (e.g. on the ground)
     # It accumulates the accelerations and averages them to calibrate the sensors
+    #
+
 
     def process_calibrate(self, linear_acceleration, angular_acceleration,dt):
 
-
-        self.linear_acceleration_offsets, self.linear_calibration_count  = self.accumulate_calibration(
+        self.linear_acceleration_offsets, self.linear_calibration_count = self.accumulate_calibration(
             linear_acceleration,
             self.linear_acceleration_offsets,
             self.linear_calibration_count
@@ -195,7 +198,7 @@ class SensorData(object):
 
         #finds change in linear velocity and increments linear velocity by that amount
         delta_linear_velocity = Vector.scale(self.linear_acceleration,dt)
-        self.linear_velocity = Vector.add(self.linear_velocity,delta_linear_velocity)
+        self._linear_velocity = Vector.add(self.linear_velocity,delta_linear_velocity)
 
         #finds change in angular position and increments angular position by that amount
         delta_angular_position = Vector.scale(self.angular_velocity,dt)
@@ -203,7 +206,7 @@ class SensorData(object):
 
         #finds change in angular velocity and increments angular velocity by that amount
         delta_angular_velocity = Vector.scale(self.angular_acceleration,dt)
-        self.angular_velocity = Vector.add(self.angular_velocity,delta_angular_velocity)
+        self._angular_velocity = Vector.add(self.angular_velocity,delta_angular_velocity)
 
 
     def process_debug(self, linear_acceleration, angular_acceleration,dt):
@@ -211,3 +214,11 @@ class SensorData(object):
         #self.acceleration_log.write('{}, {}, {}, {}\n'.format(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], dt))
 
         return
+
+    @property
+    def linear_velocity(self):
+        return self._linear_velocity
+
+    @property
+    def angular_velocity(self):
+        return self._angular_velocity

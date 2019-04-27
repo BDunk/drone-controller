@@ -28,6 +28,10 @@ class PID:
     def change_set_point(self,new_setpoint):
         self.set_point=new_setpoint
 
+    #TODO: use property getter
+    def get_set_point(self):
+        return self.set_point
+
     def change_current_point(self,new_currentpoint):
         self.current_point=new_currentpoint
 
