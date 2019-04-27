@@ -38,9 +38,10 @@ class TestSensorData(TestCase):
 
 
     def test_change_impulse(self):
-        testPID=PID(0.5,0,0.2)
-
+        testPID=PID(1.85,0,0.0000525)
+        #1.85,0,0 & 1.85,0,0.0001
         time_old=time.time()
+        original_start_time=time_old
         time_difference = time.time() - time_old
 
         TARGET_SET_POINT = 1.0
@@ -59,7 +60,7 @@ class TestSensorData(TestCase):
                                                                                  testPID.current_point,
                                                                                  pid_adjustment,
                                                                                  time.time()))
-            self.pid_response_writer.writerow([testPID.PID_old_time , testPID.current_point])
+            self.pid_response_writer.writerow([testPID.PID_old_time-original_start_time , testPID.current_point])
 
 
         #TODO: Goal is to be able to confirm something as having ended up correct

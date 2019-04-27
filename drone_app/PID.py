@@ -59,7 +59,7 @@ class PID:
         self.derivative_term=self.PID_derror/PID_dt
 
         #calculates motor_output using PID equation
-        self.motor_output=(self.proportional_gain*self.error)+(self.integral_gain*self.integral_term)+(self.derivative_gain*self.derivative_term)
+        self.motor_output=(self.proportional_gain*self.error)-(self.integral_gain*self.integral_term)-(self.derivative_gain*self.derivative_term)
 
 
         #records current error for next loop
