@@ -23,7 +23,7 @@ class TestSensorData(TestCase):
 
     #Extension of the TestCase class, called once per test in this class
     def setUp(self):
-        self.pid_response_handle = open('pid_response.csv', 'w+')
+        self.pid_response_handle = open('pid_response.csv', 'w')
         self.pid_response_writer = csv.writer(self.pid_response_handle)
         self.pid_response_writer.writerow(['timestamp','value_at_timestamp'])
 
@@ -38,7 +38,7 @@ class TestSensorData(TestCase):
 
 
     def test_change_impulse(self):
-        testPID=PID(1.85,0,0)
+        testPID=PID(0.5,0,0.2)
 
         time_old=time.time()
         time_difference = time.time() - time_old
