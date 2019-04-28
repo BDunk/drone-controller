@@ -113,10 +113,8 @@ class Drone (SensorDataManager):
 
         # Pass values outside of range to motor matrix, as it clamps them
 
-        self.motor_matrix.pitch_forward(forward_adjust)
-        self.motor_matrix.roll_right(translate_adjust)
-        self.motor_matrix.rise(rise_adjust)
-        self.motor_matrix.yaw_clockwise(rotate_adjust)
+        self.motor_matrix.set_platform_controls(rise_adjust, forward_adjust, translate_adjust,rotate_adjust)
+
 
 
     def rise_at_rate(self, rise_normalized):
