@@ -14,6 +14,22 @@ class MotorMatrix(object):
     BACK_LEFT_PIN = 13
     BACK_RIGHT_PIN = 19
 
+    TRANSLATION_GAIN = 1/100
+
+    FL = 0
+    FR = 1
+    BL = 2
+    BR = 3
+
+    ALL = [FL, FR, BL, BR]
+    FRONT_ARRAY = [FL, FR]
+    BACK_ARRAY = [BL, BR]
+    LEFT_ARRAY = [FL, BL]
+    RIGHT_ARRAY = [FR, BR]
+
+    CLOCKWISE_ARRAY = [FR, BL] # Clockwise rotating motors
+    ANTICLOCKWISE_ARRAY = [FL, BR]
+
     def __init__(self):
         #NOTE: this is very static code, may be better to loop and calculuate these, or subclass to isolate motor
 
@@ -22,44 +38,64 @@ class MotorMatrix(object):
         self.back_left = Motor(MotorMatrix.BACK_LEFT_PIN)
         self.back_right = Motor(MotorMatrix.BACK_RIGHT_PIN)
 
-        self.front_array = [self.front_left, self.front_right]
-        self.back_array = [self.back_left, self.back_right]
-        self.left_array = [self.front_left, self.back_left]
-        self.right_array = [self.front_right, self.back_right]
-        # NOTE: a special calibration item: clockwise and counter clockwise motors on the correct diagonals
-        self.clockwise_motors = [self.front_right, self.back_right]
-        self.anticlockwise_motors = [self.front_left, self.back_left]
 
-        self.all = [self.front_left, self.front_right, self.back_right, self.back_left]
+
+        # Must be aligned with MotorMatrix.ALL
+        self.all = [self.front_left, self.front_right, self.back_left, self.back_right,]
+
+
 
     def start_your_engines(self):
 
-        # Todo: loop through all motors, calling start
-        raise NotImplementedError
+        for motor in self.all:
+            motor.start()
 
 
-    #Todo: decide how it chooses to recover from a given stimulus
-    #Todo: decide how it determines whether it should yaw then pitch, or pitch and roll?
-    #Todo: define fundamental control operation in addition to rotation; pitch? roll?
-    #Todo: is something special required to deal with oriented inversion? how to sum effects?
-    def yaw_clockwise(self, percent_max_positive_clockwise:float):
-
-        # Todo: figure out if there is a maximum rotation that needs to be calibrated.
-        raise NotImplementedError
-
-    def pitch_forward(self, percent_max_pitch:float):
-        raise NotImplementedError
+    def set_platform_controls(
+        self,
+        rise_normalized: float,
+        forward_normalized: float,
+        roll_right_normalized: float,
+        yaw_clockwise_normalized: float
+    ):
 
 
-    def roll_right(self, percent_max_roll:float):
-        raise NotImplementedError
+        buffer_speeds = [0.0, 0.0, 0.0, 0.0]
 
-    def rise(self, percent_max_rise: float):
-        raise NotImplementedError
+        for motor_index in MotorMatrix.ALL:
+            buffer_speeds[motor_index] = rise_normalized
+
+        for motor_index in MotorMatrix.FRONT_ARRAY:
+            buffer_speeds[motor_index] -= MotorMatrix.TRANSLATION_GAIN * forward_normalized
+        for motor_index in MotorMatrix.BACK_ARRAY:
+            buffer_speeds[motor_index] += MotorMatrix.TRANSLATION_GAIN * forward_normalized
+
+        for motor_index in MotorMatrix.RIGHT_ARRAY:
+            buffer_speeds[motor_index] -= MotorMatrix.TRANSLATION_GAIN * roll_right_normalized
+        for motor_index in MotorMatrix.LEFT_ARRAY:
+            buffer_speeds[motor_index] += MotorMatrix.TRANSLATION_GAIN * roll_right_normalized
+
+        for motor_index in MotorMatrix.CLOCKWISE_ARRAY:
+            buffer_speeds[motor_index] -= MotorMatrix.TRANSLATION_GAIN * yaw_clockwise_normalized
+        for motor_index in MotorMatrix.ANTICLOCKWISE_ARRAY:
+            buffer_speeds[motor_index] += MotorMatrix.TRANSLATION_GAIN * yaw_clockwise_normalized
+
+
+        for motor_index in MotorMatrix.ALL:
+            motor = self.all[motor_index]
+            desired_speed = buffer_speeds[motor_index]
+            desired_speed = min(1.0, max(-1.0, desired_speed))
+
+            translated_postive = desired_speed + 1
+            scaled_to_percent = (translated_postive/ 2) * 100
+            motor.update_speed(scaled_to_percent)
 
 
     def cleanup(self):
-        # Todo: loop and stop all motors and cleanup (question: how to confirm started?)
-        raise NotImplementedError
 
+
+        for motor in self.all:
+            motor.stop()
+
+        Motor.cleanup_all_motors()
 
