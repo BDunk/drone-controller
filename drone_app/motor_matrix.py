@@ -50,7 +50,6 @@ class MotorMatrix(object):
         for motor in self.all:
             motor.start()
 
-
     def set_platform_controls(
         self,
         rise_normalized: float,
@@ -58,7 +57,6 @@ class MotorMatrix(object):
         roll_right_normalized: float,
         yaw_clockwise_normalized: float
     ):
-
 
         buffer_speeds = [0.0, 0.0, 0.0, 0.0]
 
