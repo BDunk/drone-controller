@@ -9,6 +9,7 @@ class FakeMotor:
 
     def __init__(self, ):
         self.percent_speed = 0.0
+        self.actual_speed=0
 
     def start(self):
 
@@ -19,8 +20,10 @@ class FakeMotor:
         pass
 
 
+    #Todo: adjust rate of change for time as opposed to loops to avoid system clock speed affecting acceleration
     def update_speed(self, percent_speed: float):
         self.percent_speed = percent_speed
+        self.actual_speed = 0.9 * self.actual_speed + 0.1 * self.percent_speed
 
     def get_speed(self):
         return self.percent_speed
