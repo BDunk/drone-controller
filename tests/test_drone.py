@@ -36,4 +36,13 @@ class TestSensorData(TestCase):
 
 
 
-    def test_drone(self):
+    def test_drone_steady_rise(self):
+
+        #Istantiate a drone
+        #Either: swap motors and sensor OR Pass in simulated override
+        # give drone instructions to rise, then stop
+
+        # graph results
+        # assert motors approximately 60%
+
+        pass
