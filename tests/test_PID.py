@@ -38,7 +38,7 @@ class TestSensorData(TestCase):
 
 
     def test_change_impulse(self):
-        testPID=PID(1.85,0,0)
+        testPID=PID(0.01,0,0)
         #1.85,0,0 & 1.85,0,0.0001
         time_old=time.time()
         original_start_time=time_old

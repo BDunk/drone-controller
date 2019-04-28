@@ -42,6 +42,8 @@ class MotorMatrix(object):
     #Todo: decide how it determines whether it should yaw then pitch, or pitch and roll?
     #Todo: define fundamental control operation in addition to rotation; pitch? roll?
     #Todo: is something special required to deal with oriented inversion? how to sum effects?
+
+    #don't use motor speed differences, but just add/subtract an amount from the current %age
     def yaw_clockwise(self, percent_max_positive_clockwise:float):
 
         # Todo: figure out if there is a maximum rotation that needs to be calibrated.
