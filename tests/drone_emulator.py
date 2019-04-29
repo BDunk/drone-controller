@@ -107,7 +107,7 @@ class DroneEmulator:
         right_component = math.sin(self.angle_right) * average_force_normalized
 
 
-        adjusted_vertical_component = vertical_component - 0.6  # Assumes motors must be effectively 60% vertical to stay in the air
+        adjusted_vertical_component = vertical_component - 0.4  # Assumes motors must be effectively 40% vertical to stay in the air
 
         #Assume mapping to g's as a fraction of a g
 

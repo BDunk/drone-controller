@@ -41,16 +41,14 @@ class PID:
 
         #calculates integral term
         self.integral_term=self.integral_term+(PID_dt*error)
+        #records current error for next loop
+        self.last_error_term=error
 
         #calculates derivative term
         derivative_term=delta_error/PID_dt
 
         #calculates motor_output using PID equation
-        self.output= (self.proportional_gain * error) - (self.integral_gain * self.integral_term) - (self.derivative_gain * derivative_term)
-
-
-        #records current error for next loop
-        self.last_error_term=error
+        self.output= - ((self.proportional_gain * error) + (self.integral_gain * self.integral_term) + (self.derivative_gain * derivative_term))
 
         return self.output
 

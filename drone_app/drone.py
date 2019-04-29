@@ -25,9 +25,15 @@ class Drone (SensorDataManager):
     MODE_ACTIVE_CALIBRATING = 2
     MODE_ACTIVE_CONTROLLING = 3
 
-    #TODO: A) this should be loaded on a per system basis (i.e. unique to the drone, not a code level constant)
+    #TODO: We are estimating that a 4 meter per second error (approximate speed after dropping 1 meter)
+    #TODO: Should result in full control deflection
+    RISE_PID_CONFIG = [1.0 / 4.0, 0, 0]
+
+    #TODO: We are estimating that a 1 meter per second error
+    #TODO: Should result in full control deflection
     TRANSLATION_PID_CONFIG =[1.0, 0, 0]
-    RISE_PID_CONFIG = [1.0, 0, 0]
+
+    #TODO: No estimates yet
     ROTATIONAL_CONFIG = [1.0, 0, 0]
 
     #Consider: what motor speed do we want to apply if the error is a particular velocity error.
