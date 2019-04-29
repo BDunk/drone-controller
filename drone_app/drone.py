@@ -25,13 +25,12 @@ class Drone (SensorDataManager):
     MODE_ACTIVE_CALIBRATING = 2
     MODE_ACTIVE_CONTROLLING = 3
 
+    #TODO: A) this should be loaded on a per system basis (i.e. unique to the drone, not a code level constant)
     TRANSLATION_PID_CONFIG =[1.0, 0, 0]
     RISE_PID_CONFIG = [1.0, 0, 0]
     ROTATIONAL_CONFIG = [1.0, 0, 0]
 
-    TRANSLATION_MAX_ADJUST = 4
-    RISE_MAX_ADJUST = 100
-    ROTATION_MAX_ADJUST = 100
+    #Consider: what motor speed do we want to apply if the error is a particular velocity error.
 
 
 
@@ -130,11 +129,11 @@ class Drone (SensorDataManager):
         linear_velocity = self.sensor_data.linear_velocity
         angular_velocity = self.sensor_data.angular_velocity
 
-        forward_adjust = self.forward_controller.calculate(linear_velocity[0], delta_read_time) / Drone.TRANSLATION_MAX_ADJUST
-        translate_adjust = self.translation_controller.calculate(linear_velocity[1], delta_read_time) / Drone.TRANSLATION_MAX_ADJUST
-        rise_adjust = self.rise_controller.calculate(linear_velocity[2], delta_read_time) / Drone.RISE_MAX_ADJUST
+        forward_adjust = self.forward_controller.calculate(linear_velocity[0], delta_read_time)
+        translate_adjust = self.translation_controller.calculate(linear_velocity[1], delta_read_time)
+        rise_adjust = self.rise_controller.calculate(linear_velocity[2], delta_read_time)
         # TODO: This assumes that the 3rd axis is yaw
-        rotate_adjust = self.rotation_controller.calculate(angular_velocity[2], delta_read_time) / Drone.ROTATION_MAX_ADJUST
+        rotate_adjust = self.rotation_controller.calculate(angular_velocity[2], delta_read_time)
 
         # Pass values outside of range to motor matrix, as it clamps them
         self.motor_matrix.set_platform_controls(rise_adjust, forward_adjust, translate_adjust, rotate_adjust)

@@ -41,7 +41,7 @@ class TestDrone(TestCase, DroneControllerInterface):
     def record_state(self, drone_emulator):
 
         self.drone_response_writer.writerow([
-            time.time(),
+            time.time() - self.start_time_test,
             drone_emulator.angle_forward,
             drone_emulator.angle_right,
             drone_emulator.fl.actual_speed,
@@ -55,6 +55,8 @@ class TestDrone(TestCase, DroneControllerInterface):
         ])
 
     def test_drone_steady_rise(self):
+
+        self.start_time_test = time.time()
 
         self.drone_response_handle = open('drone_position.csv', 'w')
         self.drone_response_writer = csv.writer(self.drone_response_handle)
@@ -71,6 +73,7 @@ class TestDrone(TestCase, DroneControllerInterface):
         drone.start(self)
 
         while True:
+            time.sleep(1/1000)
             drone.process_sensors()
             if (self.is_ready):
                 break
@@ -81,6 +84,7 @@ class TestDrone(TestCase, DroneControllerInterface):
         drone.rise_at_rate(1)
 
         while True:
+            time.sleep(1/1000)
             time_now = time.time()
             drone.process_sensors()
             if (time_now - start_rise) > 5:
@@ -92,6 +96,7 @@ class TestDrone(TestCase, DroneControllerInterface):
         drone.rise_at_rate(0)
 
         while True:
+            time.sleep(1/1000)
             time_now = time.time()
             drone.process_sensors()
             if (time_now - start_hover) > 5:
