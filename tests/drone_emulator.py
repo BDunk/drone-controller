@@ -1,7 +1,6 @@
 
 import math
-
-
+import time
 
 
 
@@ -9,7 +8,8 @@ class FakeMotor:
 
     def __init__(self, ):
         self.percent_speed = 0.0
-        self.actual_speed=0
+        self.actual_speed = 0
+        self.last_update_time = time.time()
 
     def start(self):
 
@@ -19,11 +19,13 @@ class FakeMotor:
 
         pass
 
-
-    #Todo: adjust rate of change for time as opposed to loops to avoid system clock speed affecting acceleration
     def update_speed(self, percent_speed: float):
         self.percent_speed = percent_speed
-        self.actual_speed = 0.9 * self.actual_speed + 0.1 * self.percent_speed
+        time_now = time.time()
+        if (time_now-self.last_update_time) > 0.05:
+            self.actual_speed = 0.9 * self.actual_speed + 0.1 * self.percent_speed
+        self.last_update_time = time_now
+
 
     def get_speed(self):
         return self.percent_speed
@@ -34,6 +36,9 @@ class FakeMotor:
 class DroneEmulator:
 
     def __init__(self):
+
+        self.start_sample_time = None
+        self.last_num_fifo_time = None
 
         self.fl = FakeMotor()
         self.fr = FakeMotor()
@@ -64,10 +69,28 @@ class DroneEmulator:
 
 
 
-
+    MOCK_SAMPLE_RATE_PER_SECOND = 200
 
     def numFIFOBatches(self):
-        return 1
+
+        if self.start_sample_time is None:
+            #indicates not initialized
+            return 0
+
+        old_last_fifo = self.last_num_fifo_time
+        new_fifo_time = time.time()
+
+        # by continuously counting back to the original sample time,
+        # this code avoid drift that would occur with summing delta times
+        old_sample_count = int((old_last_fifo - self.start_sample_time) * DroneEmulator.MOCK_SAMPLE_RATE_PER_SECOND)
+        new_sample_count = int((new_fifo_time - self.start_sample_time) * DroneEmulator.MOCK_SAMPLE_RATE_PER_SECOND)
+
+        if new_sample_count > old_sample_count:
+            self.last_num_fifo_time = new_fifo_time
+            return new_sample_count - old_sample_count
+
+        #still in the same bucket
+        return 0
 
     def readRawAcceleration(self, fifo_batches):
 
@@ -90,7 +113,9 @@ class DroneEmulator:
 
         linear_accel = (forward_component, right_component, adjusted_vertical_component)
 
-        return linear_accel, (0,0,0), 1.0
+        return linear_accel, (0,0,0), (1.0/DroneEmulator.MOCK_SAMPLE_RATE_PER_SECOND) * fifo_batches
 
     def flushFIFO(self):
+        self.start_sample_time = time.time()
+        self.last_num_fifo_time = self.start_sample_time
         return
