@@ -1,9 +1,18 @@
-from motor import Motor
+from drone_app.motor import Motor
 
 
 # NOTE design choice: this class is passively attempting to accomplish the rotations pitch requested.
 # External logic must be sensing and requesting adjustments.
 #Pinout diagram found here: https://www.codecubix.eu/index.php/2018/05/29/hardware-pwm-with-raspberry-pi-zero/
+
+
+class MotorDefinition:
+    def __init__(self, front_left, front_right, back_left, back_right):
+        self.front_left = front_left
+        self.front_right = front_right
+        self.back_left = back_left
+        self.back_right = back_right
+
 
 
 class MotorMatrix(object):
@@ -30,13 +39,19 @@ class MotorMatrix(object):
     CLOCKWISE_ARRAY = [FR, BL] # Clockwise rotating motors
     ANTICLOCKWISE_ARRAY = [FL, BR]
 
-    def __init__(self):
+    def __init__(self, motor_definition:MotorDefinition = None):
         #NOTE: this is very static code, may be better to loop and calculuate these, or subclass to isolate motor
 
-        self.front_left = Motor(MotorMatrix.FRONT_LEFT_PIN)
-        self.front_right = Motor(MotorMatrix.FRONT_RIGHT_PIN)
-        self.back_left = Motor(MotorMatrix.BACK_LEFT_PIN)
-        self.back_right = Motor(MotorMatrix.BACK_RIGHT_PIN)
+        if not motor_definition:
+            self.front_left = Motor(MotorMatrix.FRONT_LEFT_PIN)
+            self.front_right = Motor(MotorMatrix.FRONT_RIGHT_PIN)
+            self.back_left = Motor(MotorMatrix.BACK_LEFT_PIN)
+            self.back_right = Motor(MotorMatrix.BACK_RIGHT_PIN)
+        else:
+            self.front_left = motor_definition.front_left
+            self.front_right = motor_definition.front_right
+            self.back_left = motor_definition.back_left
+            self.back_right = motor_definition.back_right
 
 
 

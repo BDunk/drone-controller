@@ -1,6 +1,12 @@
 
-import RPi.GPIO as GPIO
 
+#TODO: conditionally import rpi.gpio based on environment or make gpio availble
+#import os
+#os.uname()
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    from .gpio_mock import gpio_mock as GPIO
 
 
 
@@ -73,4 +79,6 @@ class Motor (object):
         duty_cycle_percent = (desired_pulse_width/Motor.PULSE_PERIOD_MILLIS) * 100.0
 
         return duty_cycle_percent
+
+
 

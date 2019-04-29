@@ -1,7 +1,7 @@
 
-from motor_matrix import MotorMatrix
-from sensor_data import SensorData, SensorDataManager
-from PID import PID
+from drone_app.motor_matrix import MotorMatrix
+from drone_app.sensor_data import SensorData, SensorDataManager
+from drone_app.PID import PID
 import math
 
 class DroneControllerInterface:
@@ -33,13 +33,13 @@ class Drone (SensorDataManager):
 
 
 
-    def __init__(self):
+    def __init__(self, position_unit=None, motor_definition=None):
 
         self.controller = None
 
         self.mode = Drone.MODE_STOPPED
-        self.motor_matrix = MotorMatrix()
-        self.sensor_data = SensorData(self)
+        self.motor_matrix = MotorMatrix(motor_definition=motor_definition)
+        self.sensor_data = SensorData(self, position_unit=position_unit)
 
 
         self.forward_controller = PID(
@@ -100,10 +100,10 @@ class Drone (SensorDataManager):
 
         self.forward_controller.change_current_point(linear_velocity[0])
         self.translation_controller.change_current_point(linear_velocity[1])
-        self.rise_controller.change_current_point(linear_velocity[3])
+        self.rise_controller.change_current_point(linear_velocity[2])
 
         #TODO: This assumes that the z axis is yaw, and also doesn't directly force other rotations to zero.
-        self.rotation_controller.change_current_point(angular_velocity[3])
+        self.rotation_controller.change_current_point(angular_velocity[2])
 
         forward_adjust = self.forward_controller.calculate() / Drone.TRANSLATION_MAX_ADJUST
         translate_adjust = self.translation_controller.calculate() / Drone.TRANSLATION_MAX_ADJUST

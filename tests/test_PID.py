@@ -25,7 +25,7 @@ class TestSensorData(TestCase):
     def setUp(self):
         self.pid_response_handle = open('pid_response.csv', 'w')
         self.pid_response_writer = csv.writer(self.pid_response_handle)
-        #self.pid_response_writer.writerow(['timestamp','value_at_timestamp'])
+        self.pid_response_writer.writerow(['timestamp','value_at_timestamp'])
 
 
     def tearDown(self):
@@ -56,10 +56,10 @@ class TestSensorData(TestCase):
             time_difference=time.time()-time_old
 
             # I really want to make a graph of this and I really just don't know how to interact with files like that
-            logger.info('Set Point: {}, Current Point {}, Adjustment {},Time {}'.format(testPID.set_point,
-                                                                                 testPID.current_point,
-                                                                                 pid_adjustment,
-                                                                                 time.time()))
+           # logger.info('Set Point: {}, Current Point {}, Adjustment {},Time {}'.format(testPID.set_point,
+            #                                                                     testPID.current_point,
+            #                                                                     pid_adjustment,
+            #                                                                     time.time()))
             self.pid_response_writer.writerow([testPID.PID_old_time-original_start_time , testPID.current_point])
 
 

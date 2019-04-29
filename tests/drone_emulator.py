@@ -90,10 +90,6 @@ class DroneEmulator:
 
         linear_accel = (forward_component, right_component, adjusted_vertical_component)
 
-
-
-        number_of_points = len(self.return_accel)
-
         return linear_accel, (0,0,0), 1.0
 
     def flushFIFO(self):

@@ -107,6 +107,6 @@ venv.bak/
 .idea/
 
 #graphical test outputs
-pid_response.csv
-test_PID.png
-test_PID
+*.csv
+*.png
+
