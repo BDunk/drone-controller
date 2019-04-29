@@ -3,27 +3,21 @@ import time
 class PID:
 
     def __init__(self,proportional, integral,derivative):
-        self.motor_output=0
+        self.output=0
 
         self.proportional_gain=proportional
         self.integral_gain=integral
         self.derivative_gain=derivative
 
-        self.error=0
-        self.error_old=0
+        #last error used to calculate derivative
+        self.last_error_term=0
 
-        self.PID_derror=0
-
+        #accumulator used to calculate integral
         self.integral_term=0
-        self.derivative_term=0
 
         self.set_point=0
         self.current_point=0
 
-        self.PID_old_time=0
-
-
-        self.first=True
 
     def change_set_point(self,new_setpoint):
         self.set_point=new_setpoint
@@ -32,44 +26,33 @@ class PID:
     def get_set_point(self):
         return self.set_point
 
-    def change_current_point(self,new_currentpoint):
-        self.current_point=new_currentpoint
+    def calculate(self, new_current_point, dt):
 
-    def calculate(self):
+        self.current_point = new_current_point
 
-        #i've never written something that feels so stupid, this should be in the initial call, not here
-        if self.first:
-            self.PID_old_time=time.time()
-            self.error_old=self.set_point-self.current_point
-            self.first=False
-
-        #calculates dt
-        #TODO: I think we shoul pass dt into this directly from the sensor somehow, to not rely on os clock precision
-        time_now = time.time()
-        PID_dt=time_now-self.PID_old_time
-        self.PID_old_time = time_now
+        PID_dt=dt
 
 
         #calculates error
-        self.error=self.set_point-self.current_point
+        error=self.set_point-self.current_point
 
         #calculates difference in error since last time
-        self.PID_derror=self.error-self.error_old
+        delta_error=error-self.last_error_term
 
         #calculates integral term
-        self.integral_term=self.integral_term+(PID_dt*self.error)
+        self.integral_term=self.integral_term+(PID_dt*error)
 
         #calculates derivative term
-        self.derivative_term=self.PID_derror/PID_dt
+        derivative_term=delta_error/PID_dt
 
         #calculates motor_output using PID equation
-        self.motor_output=(self.proportional_gain*self.error)-(self.integral_gain*self.integral_term)-(self.derivative_gain*self.derivative_term)
+        self.output= (self.proportional_gain * error) - (self.integral_gain * self.integral_term) - (self.derivative_gain * derivative_term)
 
 
         #records current error for next loop
-        self.error_old=self.error
+        self.last_error_term=error
 
-        return self.motor_output
+        return self.output
 
 
 

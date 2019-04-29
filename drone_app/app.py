@@ -29,8 +29,7 @@ def do_control():
 
 
     while True:
-        # hack temp to accumulate samples
-
+        #time.sleep(0) # acts as a yield
         harpoon_lagoon.process_sensors()
         controller.process_actions()
 

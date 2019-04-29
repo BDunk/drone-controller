@@ -3,6 +3,7 @@ from drone_app.motor_matrix import MotorMatrix
 from drone_app.sensor_data import SensorData, SensorDataManager
 from drone_app.PID import PID
 import math
+import time
 
 class DroneControllerInterface:
 
@@ -21,7 +22,8 @@ class Drone (SensorDataManager):
 
     MODE_STOPPED = 0
     MODE_SENSOR_LOG = 1
-    MODE_ACTIVE = 2
+    MODE_ACTIVE_CALIBRATING = 2
+    MODE_ACTIVE_CONTROLLING = 3
 
     TRANSLATION_PID_CONFIG =[1.0, 0, 0]
     RISE_PID_CONFIG = [1.0, 0, 0]
@@ -38,6 +40,9 @@ class Drone (SensorDataManager):
         self.controller = None
 
         self.mode = Drone.MODE_STOPPED
+        self.calibration_complete_time = None
+        self.last_read_time = None
+
         self.motor_matrix = MotorMatrix(motor_definition=motor_definition)
         self.sensor_data = SensorData(self, position_unit=position_unit)
 
@@ -73,15 +78,19 @@ class Drone (SensorDataManager):
     def start(self, controller: DroneControllerInterface):
 
         self.controller = controller
-        self.mode = Drone.MODE_ACTIVE
+        self.mode = Drone.MODE_ACTIVE_CALIBRATING
         self.motor_matrix.start_your_engines()
 
         self.sensor_data.start_calibration()
 
     def calibration_complete(self):
 
+        self.mode = Drone.MODE_ACTIVE_CONTROLLING
+        self.last_read_time = time.time()
+
         self.sensor_data.start_reading()
         self.controller.ready()
+
 
     def process_sensors(self):
 
@@ -94,28 +103,41 @@ class Drone (SensorDataManager):
         if self.mode == Drone.MODE_SENSOR_LOG:
             # No control functions, early return
             return
+        elif self.mode == Drone.MODE_ACTIVE_CALIBRATING:
+            #until calibration is complete, don't act on data
+            return
+        elif self.mode == Drone.MODE_ACTIVE_CONTROLLING:
+            self.read_and_control()
+            return
+        elif self.mode == Drone.MODE_STOPPED:
+            raise RuntimeError('Bad state, called process when stopped')
+        else:
+            raise RuntimeError('Unknown state')
+
+
+
+    def read_and_control(self):
+
+        read_time = time.time()
+
+        delta_read_time = read_time - self.last_read_time
+        if delta_read_time == 0:
+            #skip processing when negligible timem has passed (i.e. within clock granularity)
+            # pid controller should not be called with no time elapsed
+            return
+        self.last_read_time = read_time
 
         linear_velocity = self.sensor_data.linear_velocity
         angular_velocity = self.sensor_data.angular_velocity
 
-        self.forward_controller.change_current_point(linear_velocity[0])
-        self.translation_controller.change_current_point(linear_velocity[1])
-        self.rise_controller.change_current_point(linear_velocity[2])
-
-        #TODO: This assumes that the z axis is yaw, and also doesn't directly force other rotations to zero.
-        self.rotation_controller.change_current_point(angular_velocity[2])
-
-        forward_adjust = self.forward_controller.calculate() / Drone.TRANSLATION_MAX_ADJUST
-        translate_adjust = self.translation_controller.calculate() / Drone.TRANSLATION_MAX_ADJUST
-        rise_adjust = self.rise_controller.calculate() / Drone.RISE_MAX_ADJUST
-
-        rotate_adjust = self.rotation_controller.calculate() / Drone.ROTATION_MAX_ADJUST
+        forward_adjust = self.forward_controller.calculate(linear_velocity[0], delta_read_time) / Drone.TRANSLATION_MAX_ADJUST
+        translate_adjust = self.translation_controller.calculate(linear_velocity[1], delta_read_time) / Drone.TRANSLATION_MAX_ADJUST
+        rise_adjust = self.rise_controller.calculate(linear_velocity[2], delta_read_time) / Drone.RISE_MAX_ADJUST
+        # TODO: This assumes that the 3rd axis is yaw
+        rotate_adjust = self.rotation_controller.calculate(angular_velocity[2], delta_read_time) / Drone.ROTATION_MAX_ADJUST
 
         # Pass values outside of range to motor matrix, as it clamps them
-
-        self.motor_matrix.set_platform_controls(rise_adjust, forward_adjust, translate_adjust,rotate_adjust)
-
-
+        self.motor_matrix.set_platform_controls(rise_adjust, forward_adjust, translate_adjust, rotate_adjust)
 
     def rise_at_rate(self, rise_normalized):
 

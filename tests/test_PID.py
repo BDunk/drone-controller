@@ -1,6 +1,5 @@
 
 from unittest import TestCase
-import time
 import logging
 import sys
 import csv
@@ -36,35 +35,29 @@ class TestSensorData(TestCase):
 
 
 
-
+    MOCK_SAMPLE_RATE = 200
     def test_change_impulse(self):
         testPID=PID(0.01,0,0)
         #1.85,0,0 & 1.85,0,0.0001
-        time_old=time.time()
-        original_start_time=time_old
-        time_difference = time.time() - time_old
 
         TARGET_SET_POINT = 1.0
         testPID.change_set_point(TARGET_SET_POINT)
+        simulated_new_point = 0
 
+        counter = 0
         while abs((testPID.current_point - testPID.set_point) / testPID.set_point) > 0.0001:
-            pid_adjustment = testPID.calculate()  #TODO: Sometimes this method throws a division by zero, I expect it occurs if the time rounds to the same value (race condition)
+            counter += 1
+            pid_adjustment = testPID.calculate(simulated_new_point, 1.0/TestSensorData.MOCK_SAMPLE_RATE)
             simulated_new_point = testPID.current_point+pid_adjustment
-            # NOTE: We can make this test more comprehensive by making the simulated_new_point more comprehensive a simulation
-            testPID.change_current_point(simulated_new_point)
 
-            time_difference=time.time()-time_old
 
             # I really want to make a graph of this and I really just don't know how to interact with files like that
            # logger.info('Set Point: {}, Current Point {}, Adjustment {},Time {}'.format(testPID.set_point,
             #                                                                     testPID.current_point,
             #                                                                     pid_adjustment,
-            #                                                                     time.time()))
-            self.pid_response_writer.writerow([testPID.PID_old_time-original_start_time , testPID.current_point])
+            #                                                                     counter/TestSensorData.MOCK_SAMPLE_RATE))
+            self.pid_response_writer.writerow([counter/TestSensorData.MOCK_SAMPLE_RATE , testPID.current_point])
 
-
-        #TODO: Goal is to be able to confirm something as having ended up correct
-        # TODO: So normally you would want to end up with some combination of asserts
-        #
         self.assertAlmostEqual(testPID.current_point, testPID.set_point, 2) # Asserts that the current and set point are similar to 2 sig figs
-        # self.assertAlmostEqual(TARGET_SET_POINT, testPID.current_point, 2) # Note: this isn't true with the current code
+
+
