@@ -20,6 +20,7 @@ class PID:
 
 
     def change_set_point(self,new_setpoint):
+
         self.set_point=new_setpoint
 
     #TODO: use property getter
@@ -38,25 +39,19 @@ class PID:
 
         #calculates difference in error since last time
         delta_error=error-self.last_error_term
-
-        #calculates integral term
-        self.integral_term=self.integral_term+(PID_dt*error)
-        #records current error for next loop
-        self.last_error_term=error
-
         #calculates derivative term
         derivative_term=delta_error/PID_dt
 
+        #calculates integral term
+        self.integral_term=self.integral_term+(PID_dt*error)
+
+        #records current error for next loop
+        self.last_error_term=error
+
         #calculates motor_output using PID equation
-        self.output= - ((self.proportional_gain * error) + (self.integral_gain * self.integral_term) + (self.derivative_gain * derivative_term))
+        self.output= (self.proportional_gain * error) + (self.integral_gain * self.integral_term) + (self.derivative_gain * derivative_term)
 
         return self.output
-
-
-
-
-
-
 
 
 

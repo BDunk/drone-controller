@@ -1,7 +1,14 @@
 
 import math
 import time
+import logging
+import sys
 
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logger = logging.getLogger()
+
+logger.setLevel(logging.INFO)
 
 
 class FakeMotor:
@@ -20,11 +27,12 @@ class FakeMotor:
         pass
 
     def update_speed(self, percent_speed: float):
+
         self.percent_speed = percent_speed
         time_now = time.time()
         if (time_now-self.last_update_time) > 0.05:
             self.actual_speed = 0.9 * self.actual_speed + 0.1 * self.percent_speed
-        self.last_update_time = time_now
+            self.last_update_time = time_now
 
 
     def get_speed(self):
@@ -102,16 +110,19 @@ class DroneEmulator:
 
         vertical_component = math.cos(self.angle_forward) * math.cos(self.angle_right) * average_force_normalized
 
+
         forward_component = math.sin(self.angle_forward) * average_force_normalized
 
         right_component = math.sin(self.angle_right) * average_force_normalized
 
 
-        adjusted_vertical_component = vertical_component - 0.4  # Assumes motors must be effectively 40% vertical to stay in the air
+        adjusted_vertical_component = vertical_component - 0.3  # Assumes motors must be effectively 40% vertical to stay in the air
 
         #Assume mapping to g's as a fraction of a g
 
         linear_accel = (forward_component, right_component, adjusted_vertical_component)
+
+        #logger.info("Current accel force {}".format(linear_accel))
 
         return linear_accel, (0,0,0), (1.0/DroneEmulator.MOCK_SAMPLE_RATE_PER_SECOND) * fifo_batches
 

@@ -115,6 +115,7 @@ class SensorData(object):
 
         linear_acceleration,angular_acceleration, dt = acceleration_position_unit.readRawAcceleration(available_batches)
 
+
         if self.mode == SensorData.MODE_READING:
             self.process_read(linear_acceleration,angular_acceleration,dt)
         elif self.mode == SensorData.MODE_DEBUGGING:

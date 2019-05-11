@@ -87,7 +87,7 @@ class TestDrone(TestCase, DroneControllerInterface):
             time.sleep(1/1000)
             time_now = time.time()
             drone.process_sensors()
-            if (time_now - start_rise) > 5:
+            if (time_now - start_rise) > 10:
                 break
             self.record_state(drone_emulator)
 
@@ -99,7 +99,7 @@ class TestDrone(TestCase, DroneControllerInterface):
             time.sleep(1/1000)
             time_now = time.time()
             drone.process_sensors()
-            if (time_now - start_hover) > 5:
+            if (time_now - start_hover) > 10:
                 break
             self.record_state(drone_emulator)
 
@@ -107,8 +107,8 @@ class TestDrone(TestCase, DroneControllerInterface):
         self.drone_response_handle.close()
         self.drone_response_handle = None
 
-        self.assertAlmostEqual(60, drone_emulator.fl.actual_speed)
-        self.assertAlmostEqual(60, drone_emulator.fr.actual_speed)
-        self.assertAlmostEqual(60, drone_emulator.bl.actual_speed)
-        self.assertAlmostEqual(60, drone_emulator.br.actual_speed)
+        self.assertAlmostEqual(60, drone_emulator.fl.actual_speed, places=2)
+        self.assertAlmostEqual(60, drone_emulator.fr.actual_speed, places=2)
+        self.assertAlmostEqual(60, drone_emulator.bl.actual_speed, places=2)
+        self.assertAlmostEqual(60, drone_emulator.br.actual_speed, places=2)
 

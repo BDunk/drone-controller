@@ -4,6 +4,10 @@ from drone_app.sensor_data import SensorData, SensorDataManager
 from drone_app.PID import PID
 import math
 import time
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 class DroneControllerInterface:
 
@@ -25,13 +29,13 @@ class Drone (SensorDataManager):
     MODE_ACTIVE_CALIBRATING = 2
     MODE_ACTIVE_CONTROLLING = 3
 
-    #TODO: We are estimating that a 4 meter per second error (approximate speed after dropping 1 meter)
-    #TODO: Should result in full control deflection
-    RISE_PID_CONFIG = [1.0 / 4.0, 0, 0]
-
     #TODO: We are estimating that a 1 meter per second error
     #TODO: Should result in full control deflection
-    TRANSLATION_PID_CONFIG =[1.0, 0, 0]
+    RISE_PID_CONFIG = [1.0, 0, 0]
+
+    #TODO: We are estimating that a 0.5 meter per second error
+    #TODO: Should result in full control deflection
+    TRANSLATION_PID_CONFIG =[0.5, 0, 0]
 
     #TODO: No estimates yet
     ROTATIONAL_CONFIG = [1.0, 0, 0]
@@ -146,19 +150,20 @@ class Drone (SensorDataManager):
 
     def rise_at_rate(self, rise_normalized):
 
-        rise_normalized = min(-1, max(1, rise_normalized))
+        rise_normalized = min(1, max(-1, rise_normalized))
+        logger.info('got rise of  {}'.format(rise_normalized))
         desired_up_velocity = rise_normalized * Drone.MAXIMUM_RISE_RATE_METERS_PER_SECOND
         self.rise_controller.change_set_point(desired_up_velocity)
 
     def forward_at_rate(self, forward_normalized):
 
-        forward_normalized = min(-1, max(1, forward_normalized))
+        forward_normalized = min(1, max(-1, forward_normalized))
         desired_forward_velocity = forward_normalized * Drone.MAXIMUM_TRANSLATE_RATE_METERS_PER_SECOND
         self.forward_controller.change_set_point(desired_forward_velocity)
 
     def translate_right_at_rate(self, right_normalized):
 
-        right_normalized = min(-1, max(1, right_normalized))
+        right_normalized = min(1, max(-1, right_normalized))
         desired_right_velocity = right_normalized * Drone.MAXIMUM_TRANSLATE_RATE_METERS_PER_SECOND
         self.translation_controller.change_set_point(desired_right_velocity)
 
