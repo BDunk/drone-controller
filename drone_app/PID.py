@@ -10,7 +10,7 @@ class PID:
         self.derivative_gain=derivative
 
         #last error used to calculate derivative
-        self.last_error_term=0
+        self.last_value = None
 
         #accumulator used to calculate integral
         self.integral_term=0
@@ -30,6 +30,8 @@ class PID:
     def calculate(self, new_current_point, dt):
 
         self.current_point = new_current_point
+        if self.last_value is None:
+            self.last_value = self.current_point
 
         PID_dt=dt
 
@@ -37,10 +39,12 @@ class PID:
         #calculates error
         error=self.set_point-self.current_point
 
-        #calculates difference in error since last time
-        delta_error=error-self.last_error_term
+        #NOTE: the derivative of the error is the same as the derivative
+        # of the current_point except on set point changes
+        # Sudden setpoint changes cause "derivative kick" that is undesirable
+        delta_value=self.current_point-self.last_value
         #calculates derivative term
-        derivative_term=delta_error/PID_dt
+        derivative_term=delta_value/PID_dt
 
         #calculates integral term
         self.integral_term=self.integral_term+(PID_dt*error)
