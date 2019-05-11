@@ -65,7 +65,7 @@ class DroneEmulator:
 
         delta_translate_normalized = (left_side - right_side) / 200
 
-        self.angle_right += math.pi * 1/100 * delta_translate_normalized
+        self.angle_right += math.pi * delta_translate_normalized
 
 
         front_side = self.fl.percent_speed + self.fr.percent_speed
@@ -73,7 +73,7 @@ class DroneEmulator:
 
         delta_forward_normalized = (back_side - front_side) / 200
 
-        self.angle_forward += math.pi * 1/100 * delta_forward_normalized
+        self.angle_forward += math.pi * delta_forward_normalized
 
 
 

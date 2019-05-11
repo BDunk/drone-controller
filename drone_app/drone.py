@@ -33,9 +33,9 @@ class Drone (SensorDataManager):
     #TODO: Should result in full control deflection
     RISE_PID_CONFIG = [1.0, 0, 0]
 
-    #TODO: We are estimating that a 0.5 meter per second error
+    #TODO: We are estimating that a 10 meter per second error
     #TODO: Should result in full control deflection
-    TRANSLATION_PID_CONFIG =[0.5, 0, 0]
+    TRANSLATION_PID_CONFIG =[1.0/10, 0, 0]
 
     #TODO: No estimates yet
     ROTATIONAL_CONFIG = [1.0, 0, 0]
@@ -151,7 +151,6 @@ class Drone (SensorDataManager):
     def rise_at_rate(self, rise_normalized):
 
         rise_normalized = min(1, max(-1, rise_normalized))
-        logger.info('got rise of  {}'.format(rise_normalized))
         desired_up_velocity = rise_normalized * Drone.MAXIMUM_RISE_RATE_METERS_PER_SECOND
         self.rise_controller.change_set_point(desired_up_velocity)
 

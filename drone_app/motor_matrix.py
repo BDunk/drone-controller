@@ -23,7 +23,7 @@ class MotorMatrix(object):
     BACK_LEFT_PIN = 13
     BACK_RIGHT_PIN = 19
 
-    TRANSLATION_GAIN = 1/100
+    TRANSLATION_GAIN = 1/10
 
     FL = 0
     FR = 1

@@ -6,11 +6,7 @@ import time
 import logging
 import sys
 import csv
-
-
-
-
-
+import math
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logger = logging.getLogger()
@@ -18,7 +14,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-class TestDrone(TestCase, DroneControllerInterface):
+class TestLateral(TestCase, DroneControllerInterface):
 
 
 
@@ -30,8 +26,6 @@ class TestDrone(TestCase, DroneControllerInterface):
 
     def tearDown(self):
         pass
-
-
 
 
     def ready(self):
@@ -54,14 +48,14 @@ class TestDrone(TestCase, DroneControllerInterface):
             drone_emulator.bl.percent_speed,
         ])
 
-    def test_drone_steady_rise(self):
+    def test_wind_strike(self):
 
         self.start_time_test = time.time()
 
-        self.drone_response_handle = open('drone_position.csv', 'w')
+        self.drone_response_handle = open('drone_lateral.csv', 'w')
         self.drone_response_writer = csv.writer(self.drone_response_handle)
-        self.drone_response_writer.writerow(['timestamp', 'front_angle', 'right_angle', 'fl_actual', 'fr_actual', 'br_actual', 'bl_actual',
-                                             'fl_demand', 'fr_demand', 'br_demand', 'bl_demand'])
+        self.drone_response_writer.writerow(['timestamp', 'frontAngle', 'rightAngle', 'flActual', 'frActual', 'brActual', 'blActual',
+                                             'flDemand', 'frDemand', 'brDemand', 'blDemand'])
 
 
         drone_emulator = DroneEmulator()
@@ -79,18 +73,6 @@ class TestDrone(TestCase, DroneControllerInterface):
                 break
             self.record_state(drone_emulator)
 
-        start_rise = time.time()
-
-        drone.rise_at_rate(1)
-
-        while True:
-            time.sleep(1/1000)
-            time_now = time.time()
-            drone.process_sensors()
-            if (time_now - start_rise) > 10:
-                break
-            self.record_state(drone_emulator)
-
         start_hover = time.time()
 
         drone.rise_at_rate(0)
@@ -102,6 +84,34 @@ class TestDrone(TestCase, DroneControllerInterface):
             if (time_now - start_hover) > 10:
                 break
             self.record_state(drone_emulator)
+
+        #fake dropping the front:
+
+        drone_emulator.angle_forward = (20/360) * 2 * math.pi
+
+        start_recover_front_drop = time.time()
+
+        while True:
+            time.sleep(1/1000)
+            time_now = time.time()
+            drone.process_sensors()
+            if (time_now - start_recover_front_drop) > 30:
+                break
+            self.record_state(drone_emulator)
+
+        #fake dropping the left:
+        # drone_emulator.angle_right = (-20/360) * 2 * math.pi
+        #
+        # start_recover_left_drop = time.time()
+        #
+        # while True:
+        #     time.sleep(1 / 1000)
+        #     time_now = time.time()
+        #     drone.process_sensors()
+        #     if (time_now - start_recover_left_drop) > 5:
+        #         break
+        #     self.record_state(drone_emulator)
+
 
         self.drone_response_writer = None
         self.drone_response_handle.close()
