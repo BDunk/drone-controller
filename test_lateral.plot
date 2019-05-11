@@ -10,4 +10,6 @@ set style data lines
 #motor velocities:
 #plot 'drone_lateral.csv' using 1:4 with lines, '' using 1:8 with lines, '' using 1:6 with lines, '' using 1:10 with lines
 #angles:
-plot 'drone_lateral.csv' using 1:2 with lines, '' using 1:3 with lines
+#plot 'drone_lateral.csv' using 1:2 with lines, '' using 1:3 with lines
+# two axis
+plot 'drone_lateral.csv' using 1:4 with lines axis x1y1, '' using 1:8 with lines  axis x1y1, '' using 1:6 with lines  axis x1y1, '' using 1:10 with lines  axis x1y1, '' using 1:2 with lines  axis x1y2, '' using 1:3 with lines axis x1y2
