@@ -110,3 +110,6 @@ venv.bak/
 *.csv
 *.png
 
+
+#macbook image layout stuff
+.DS_Store
