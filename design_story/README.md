@@ -30,4 +30,4 @@ While the software side was being designed, the drone frame itself was designed 
 The drone was then assemebled using super-glue.
 
 ![Assembly Process](./IMG_20190517_161822.jpg)
-![
+![Fully Assembled](./IMG_20190518_120956.jpg)
