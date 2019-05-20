@@ -3,7 +3,10 @@
 
 We set out on this project with the intention of creating a fully autonomous drone.
 
-After discussion with others who had done similar projects, we decided to use a Raspberry Pi as the main control.
+After discussion with others who had done similar projects, we decided to use a Raspberry Pi as the main control. 
+Both authors familiarity with Python, and the desire for aditional functionality of video processing solidified this choice.
+
+Before purchasing components, an analysis of the weight of the frame, electrical components, and other pieces was conducted to ensure that the thrust provided by the motors would be enough to allow the drone to be reasonably maneuvreable.
 
 After purchasing components, one of the first steps was to create a program which could run our motors and read data from our gyroscope.
 
