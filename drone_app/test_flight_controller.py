@@ -36,12 +36,12 @@ class TestFlightController (object):
         if self.current_state == "WAIT":
             self.current_state = "RISE"
             self.exit_state_time = self.enter_state_time + 5
-            self.drone_to_control.rise_at_rate(10)
+            self.drone_to_control.rise_at_rate(0.1)
 
         if self.current_state == "RISE":
             self.current_state = "DROP"
             self.exit_state_time = self.enter_state_time + 10
-            self.drone_to_control.rise_at_rate(-10)
+            self.drone_to_control.rise_at_rate(-0.1)
 
         if self.current_state == "DROP":
             self.current_state = "WAIT"
