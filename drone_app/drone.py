@@ -1,7 +1,7 @@
 
-from drone_app.motor_matrix import MotorMatrix
-from drone_app.sensor_data import SensorData, SensorDataManager
-from drone_app.PID import PID
+from motor_matrix import MotorMatrix
+from sensor_data import SensorData, SensorDataManager
+from PID import PID
 import math
 import time
 import logging
@@ -28,6 +28,7 @@ class Drone (SensorDataManager):
     MODE_SENSOR_LOG = 1
     MODE_ACTIVE_CALIBRATING = 2
     MODE_ACTIVE_CONTROLLING = 3
+    MODE_TESTING = 4
 
     #TODO: We are estimating that a 1 meter per second error
     #TODO: Should result in full control deflection
@@ -54,6 +55,7 @@ class Drone (SensorDataManager):
 
         self.motor_matrix = MotorMatrix(motor_definition=motor_definition)
         self.sensor_data = SensorData(self, position_unit=position_unit)
+        self.stop_motor_test_time = None
 
 
         self.forward_controller = PID(
@@ -83,6 +85,15 @@ class Drone (SensorDataManager):
         self.mode = Drone.MODE_SENSOR_LOG
         self.sensor_data.start_debugging()
         self.controller.ready()
+
+    #diagnostic used to see what direction motors are spinning
+    def start_motor_test(self,  controller: DroneControllerInterface):
+        self.controller = controller
+        self.mode = Drone.MODE_TESTING
+        self.motor_matrix.start_your_engines()
+        self.motor_matrix.set_platform_controls(0.005, 0, 0, 0)
+        self.controller.ready()
+
 
     def start(self, controller: DroneControllerInterface):
 
@@ -118,6 +129,10 @@ class Drone (SensorDataManager):
         elif self.mode == Drone.MODE_ACTIVE_CONTROLLING:
             self.read_and_control()
             return
+        elif self.mode == Drone.MODE_TESTING:
+            # nothing require for test
+            return
+
         elif self.mode == Drone.MODE_STOPPED:
             raise RuntimeError('Bad state, called process when stopped')
         else:

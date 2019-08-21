@@ -22,18 +22,18 @@ def do_control():
     controller = NoOpFlightController(harpoon_lagoon)
 
     #TODO: Swap start_sensor_log for start() if not operting in diagnostic mode (add command line switch?)
-    #drone.start();
-    harpoon_lagoon.start_sensor_log()
+    #drone.start(controller);
+    #harpoon_lagoon.start_sensor_log(controller)
+    harpoon_lagoon.start_motor_test(controller)
 
+    still_controlling = True
 
-
-
-    while True:
+    while still_controlling:
         #time.sleep(0) # acts as a yield
         harpoon_lagoon.process_sensors()
-        controller.process_actions()
+        still_controlling = controller.process_actions()
 
-
+    harpoon_lagoon.cleanup()
 
 
 do_control()

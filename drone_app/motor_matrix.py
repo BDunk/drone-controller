@@ -1,4 +1,4 @@
-from drone_app.motor import Motor
+from motor import Motor
 
 
 # NOTE design choice: this class is passively attempting to accomplish the rotations pitch requested.

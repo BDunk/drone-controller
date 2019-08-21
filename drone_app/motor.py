@@ -6,7 +6,7 @@
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    from .gpio_mock import gpio_mock as GPIO
+    from gpio_mock import gpio_mock as GPIO
 
 
 

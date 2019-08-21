@@ -4,7 +4,7 @@
 try:
     import smbus
 except ImportError:
-    from .smbus_mock import smbus_mock as smbus
+    from smbus_mock import smbus_mock as smbus
 
 
 class I2C:
