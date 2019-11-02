@@ -2,8 +2,10 @@ import logging
 from test_flight_controller import TestFlightController
 from no_op_flight_controller import NoOpFlightController
 from drone import Drone
-import time
 import sys
+
+from motor import Motor
+
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logger = logging.getLogger()
@@ -37,3 +39,6 @@ def do_control():
 
 
 do_control()
+
+
+
