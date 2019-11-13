@@ -74,10 +74,13 @@ class SensorData(object):
 
         self.acceleration_position_unit.flushFIFO()
 
+        self.acceleration_log = None
+
     def start_debugging(self):
 
         self.mode = SensorData.MODE_DEBUGGING
         logger.setLevel(logging.DEBUG)
+        self.acceleration_log = open("acceleration.csv", "w+")
 
     # After calibration time has expired, the sensor manager is called with calibration ready
     def start_calibration(self):
@@ -212,7 +215,7 @@ class SensorData(object):
 
     def process_debug(self, linear_acceleration, angular_acceleration,dt):
 
-        #self.acceleration_log.write('{}, {}, {}, {}\n'.format(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], dt))
+        self.acceleration_log.write('{}, {}, {}, {}\n'.format(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], dt))
 
         return
 
