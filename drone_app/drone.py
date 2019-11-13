@@ -91,6 +91,9 @@ class Drone (SensorDataManager):
         self.controller = controller
         self.mode = Drone.MODE_TESTING
         self.motor_matrix.start_your_engines()
+
+        self.sensor_data.start_debugging()
+
         self.motor_matrix.set_platform_controls(0.005, 0, 0, 0)
         self.controller.ready()
 
