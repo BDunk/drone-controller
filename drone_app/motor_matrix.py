@@ -103,6 +103,18 @@ class MotorMatrix(object):
             scaled_to_percent = (translated_postive/ 2) * 100
             motor.update_speed(scaled_to_percent)
 
+    def direct_test(
+            self,
+            fl_normalized: float,
+            fr_normalized: float,
+            br_normalized: float,
+            bl_normalized: float,
+        ):
+
+        self.front_left.update_speed(fl_normalized * 100)
+        self.front_right.update_speed(fr_normalized * 100)
+        self.back_right.update_speed(br_normalized * 100)
+        self.front_left.update_speed(bl_normalized * 100)
 
     def cleanup(self):
 

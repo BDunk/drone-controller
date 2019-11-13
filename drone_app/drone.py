@@ -94,7 +94,7 @@ class Drone (SensorDataManager):
 
         self.sensor_data.start_debugging()
 
-        self.motor_matrix.set_platform_controls(0.005, 0, 0, 0)
+        self.motor_matrix.set_platform_controls(0, 0, 0, 0)
         self.controller.ready()
 
 
@@ -194,6 +194,14 @@ class Drone (SensorDataManager):
         #self.rotation_controller.change_set_point(desired_clockwise_velocity)
 
 
+    def direct_motor_test(
+            self,
+            fl_normalized: float,
+            fr_normalized: float,
+            br_normalized: float,
+            bl_normalized: float):
+
+        self.motor_matrix.direct_test(fl_normalized, fr_normalized, br_normalized, bl_normalized)
 
     def cleanup(self):
         self.motor_matrix.cleanup()

@@ -1,6 +1,7 @@
 import logging
 from test_flight_controller import TestFlightController
 from no_op_flight_controller import NoOpFlightController
+from test_motor_controller import TestMotorController
 from drone import Drone
 import time
 import sys
@@ -19,7 +20,7 @@ def do_control():
 
     #TODO: Swap controller depending on control mode (add command line switch?)
     #controller = TestFlightController(drone)
-    controller = NoOpFlightController(harpoon_lagoon)
+    controller = TestMotorController(harpoon_lagoon)
 
     #TODO: Swap start_sensor_log for start() if not operting in diagnostic mode (add command line switch?)
     #drone.start(controller);
