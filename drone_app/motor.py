@@ -1,4 +1,4 @@
-
+import logging
 
 #TODO: conditionally import rpi.gpio based on environment or make gpio availble
 #import os
@@ -8,9 +8,9 @@ try:
 except ImportError:
     from gpio_mock import gpio_mock as GPIO
 
+logger = logging.getLogger()
 
-
-
+logger.setLevel(logging.INFO)
 
 
 class Motor (object):
@@ -58,6 +58,7 @@ class Motor (object):
         self.percent_speed = percent_speed
         pwm_controller = self.pwm_controller
         duty_cycle_for_speed = Motor.duty_cycle_from_percent(self.percent_speed)
+        logger.info('percent {} duty {} for motor {} ', percent_speed, duty_cycle_for_speed, self.gpio_number)
         pwm_controller.ChangeDutyCycle(duty_cycle_for_speed)
 
     def get_speed(self):

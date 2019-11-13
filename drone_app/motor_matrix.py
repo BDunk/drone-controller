@@ -114,7 +114,7 @@ class MotorMatrix(object):
         self.front_left.update_speed(fl_normalized * 100)
         self.front_right.update_speed(fr_normalized * 100)
         self.back_right.update_speed(br_normalized * 100)
-        self.front_left.update_speed(bl_normalized * 100)
+        self.back_left.update_speed(bl_normalized * 100)
 
     def cleanup(self):
 

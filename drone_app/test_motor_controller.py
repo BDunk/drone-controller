@@ -31,25 +31,30 @@ class TestMotorController (DroneControllerInterface):
         if self.current_state == "WAIT":
             self.current_state = "FL"
             self.exit_state_time = self.enter_state_time + 5
-            self.drone_to_control.direct_motor_test(0.1, 0, 0, 0)
+            self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.5)
+            return True
 
         if self.current_state == "FL":
             self.current_state = "FR"
             self.exit_state_time = self.enter_state_time + 5
-            self.drone_to_control.direct_motor_test(0, 0.1, 0, 0)
+            self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.5)
+            return True
 
         if self.current_state == "FR":
             self.current_state = "BR"
             self.exit_state_time = self.enter_state_time + 5
-            self.drone_to_control.direct_motor_test(0, 0, 0.1, 0)
+            self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.5)
+            return True
 
         if self.current_state == "BR":
             self.current_state = "BL"
             self.exit_state_time = self.enter_state_time + 5
-            self.drone_to_control.direct_motor_test(0, 0, 0, 0.1)
+            self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.5)
+            return True
 
         if self.current_state == "BL":
             self.current_state = "DONE"
+            self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.0)
             return False
 
         return True
