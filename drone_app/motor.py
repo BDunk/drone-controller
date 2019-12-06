@@ -1,17 +1,11 @@
 import logging
-
-#TODO: conditionally import rpi.gpio based on environment or make gpio availble
-#import os
-#os.uname()
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    from gpio_mock import gpio_mock as GPIO
+from RPIO import PWM
 
 logger = logging.getLogger()
 
 logger.setLevel(logging.INFO)
 
+servo = PWM.servo()
 
 class Motor (object):
     """
@@ -25,11 +19,11 @@ class Motor (object):
      (speed is in percent)
     """
 
-    MAX_WIDTH_MILLIS = 2.0
-    MIN_WIDTH_MILLIS = 1.0
+    MAX_WIDTH_MICROS = 2000
+    MIN_WIDTH_MICROS = 1000
     PULSE_PERIOD_MILLIS = 20.0
     PULSE_FREQUENCY = 1/(PULSE_PERIOD_MILLIS/1000)
-    VARIABLE_RANGE_MILLIS = MAX_WIDTH_MILLIS - MIN_WIDTH_MILLIS
+    VARIABLE_RANGE_MICROS = MAX_WIDTH_MICROS - MIN_WIDTH_MICROS
 
 
     def __init__(self, gpio_number):
@@ -40,46 +34,35 @@ class Motor (object):
 
     def start(self):
 
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.gpio_number, GPIO.OUT)
-
-        self.pwm_controller = GPIO.PWM(self.gpio_number, Motor.PULSE_FREQUENCY)
-        duty_cycle_for_zero = Motor.duty_cycle_from_percent(0.0)
-        self.pwm_controller.start(duty_cycle_for_zero)
+        servo.set_servo(self.gpio_number, Motor.MIN_WIDTH_MICROS)
 
     def stop(self):
-        self.pwm_controller.stop()
+        servo.stop_servo(self.gpio_number)
 
     @classmethod
     def cleanup_all_motors(cls):
-        GPIO.cleanup()
+        PWM.cleanup()
 
     def update_speed(self, percent_speed: float):
         self.percent_speed = percent_speed
         pwm_controller = self.pwm_controller
-        duty_cycle_for_speed = Motor.duty_cycle_from_percent(self.percent_speed)
-        logger.info('percent {} duty {} for motor {} ', percent_speed, duty_cycle_for_speed, self.gpio_number)
-        pwm_controller.ChangeDutyCycle(duty_cycle_for_speed)
+        micros_for_speed = Motor.micros_from_percent(self.percent_speed)
+        logger.info('percent {} micros {} for motor {} ', percent_speed, micros_for_speed, self.gpio_number)
+        servo.set_servo(self.gpio_number,micros_for_speed)
 
     def get_speed(self):
         return self.percent_speed
 
     @classmethod
-    def duty_cycle_from_percent(cls, percent_speed: float):
-        # needs despaghettification
-        # 100*(MIN_WIDTH_MILLIS+(percent_speed/100)*(MAX_WIDTH_MILLIS-MIN_WIDTH_MILLIS))/PULSE_PERIOD
-        # actual length= min+(speed/100)*(max-min)
-        # decimal duty cycle = actual length/period
-        # percent duty cycle = 100 *decimal duty cycle
+    def micros_from_percent(cls, percent_speed: float):
 
         bounded_percent_speed = min(100.0, max(0.0, percent_speed))
         bounded_ratio_speed = bounded_percent_speed/100.0
 
-        desired_pulse_width = Motor.MIN_WIDTH_MILLIS + bounded_ratio_speed * Motor.VARIABLE_RANGE_MILLIS
+        desired_pulse_width = Motor.MIN_WIDTH_MICROS + bounded_ratio_speed * Motor.VARIABLE_RANGE_MICROS
 
-        duty_cycle_percent = (desired_pulse_width/Motor.PULSE_PERIOD_MILLIS) * 100.0
+        return desired_pulse_width
 
-        return duty_cycle_percent
 
 
 
