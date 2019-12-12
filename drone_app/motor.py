@@ -5,7 +5,7 @@ logger = logging.getLogger()
 
 logger.setLevel(logging.INFO)
 
-servo = PWM.servo()
+servo = PWM.Servo()
 
 class Motor (object):
     """
@@ -45,10 +45,9 @@ class Motor (object):
 
     def update_speed(self, percent_speed: float):
         self.percent_speed = percent_speed
-        pwm_controller = self.pwm_controller
         micros_for_speed = Motor.micros_from_percent(self.percent_speed)
-        logger.info('percent {} micros {} for motor {} ', percent_speed, micros_for_speed, self.gpio_number)
-        servo.set_servo(self.gpio_number,micros_for_speed)
+        logger.info('percent {} micros {} for motor {} '.format(percent_speed, micros_for_speed, self.gpio_number))
+        servo.set_servo(self.gpio_number, micros_for_speed)
 
     def get_speed(self):
         return self.percent_speed

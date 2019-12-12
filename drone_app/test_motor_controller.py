@@ -1,6 +1,11 @@
+import logging
+
 from drone import Drone, DroneControllerInterface
 import time
 
+logger = logging.getLogger()
+
+logger.setLevel(logging.INFO)
 
 class TestMotorController (DroneControllerInterface):
 
@@ -22,37 +27,43 @@ class TestMotorController (DroneControllerInterface):
 
         if time_now < self.exit_state_time:
             # nothing to do yet
-            return True
+            return False
 
+        return True
         # proceed to next state:
         self.enter_state_time = self.exit_state_time
 
         # TODO: proper declarative state machine...
         if self.current_state == "WAIT":
+            logger.info("\n\nAbout to FL\n\n")
             self.current_state = "FL"
             self.exit_state_time = self.enter_state_time + 5
-            self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.5)
+            self.drone_to_control.direct_motor_test(0.5, 0.0, 0.0, 0.0)
             return True
 
         if self.current_state == "FL":
+            logger.info("\n\nAbout to FR\n\n")
             self.current_state = "FR"
             self.exit_state_time = self.enter_state_time + 5
-            self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.5)
+            self.drone_to_control.direct_motor_test(0.0, 0.5, 0.0, 0.0)
             return True
 
         if self.current_state == "FR":
+            logger.info("\n\nAbout to BR\n\n")
             self.current_state = "BR"
             self.exit_state_time = self.enter_state_time + 5
-            self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.5)
+            self.drone_to_control.direct_motor_test(0.0, 0.0, 0.5, 0.0)
             return True
 
         if self.current_state == "BR":
+            logger.info("\n\nAbout to BL\n\n")
             self.current_state = "BL"
             self.exit_state_time = self.enter_state_time + 5
             self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.5)
             return True
 
         if self.current_state == "BL":
+            logger.info("\n\nAbout to Done\n\n")
             self.current_state = "DONE"
             self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.0)
             return False
@@ -61,7 +72,8 @@ class TestMotorController (DroneControllerInterface):
 
     def ready(self):
         # Exit the wait mode when ready called
-        self.exit_state_time = time.time()
-
+        self.exit_state_time = time.time() + 30
+        logger.info("About to exit wait")
+        self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.0)
         return
 

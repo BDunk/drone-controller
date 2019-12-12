@@ -20,12 +20,13 @@ def do_control():
 
     #TODO: Swap controller depending on control mode (add command line switch?)
     #controller = TestFlightController(drone)
-    controller = TestMotorController(harpoon_lagoon)
+    #controller = TestMotorController(harpoon_lagoon)
+    controller = NoOpFlightController(harpoon_lagoon)
 
     #TODO: Swap start_sensor_log for start() if not operting in diagnostic mode (add command line switch?)
     #drone.start(controller);
-    #harpoon_lagoon.start_sensor_log(controller)
-    harpoon_lagoon.start_motor_test(controller)
+    harpoon_lagoon.start_sensor_log(controller)
+    #harpoon_lagoon.start_motor_test(controller)
 
     still_controlling = True
 

@@ -81,6 +81,7 @@ class SensorData(object):
         self.mode = SensorData.MODE_DEBUGGING
         logger.setLevel(logging.DEBUG)
         self.acceleration_log = open("acceleration.csv", "w+")
+        self.acceleration_log.write('dt, l0, l1, l2, a0, a1, a2\n')
 
     # After calibration time has expired, the sensor manager is called with calibration ready
     def start_calibration(self):
@@ -117,7 +118,6 @@ class SensorData(object):
             return
 
         linear_acceleration,angular_acceleration, dt = acceleration_position_unit.readRawAcceleration(available_batches)
-
 
         if self.mode == SensorData.MODE_READING:
             self.process_read(linear_acceleration,angular_acceleration,dt)
@@ -192,7 +192,6 @@ class SensorData(object):
             self.angular_acceleration_scaling_factor
         )
 
-
         self.linear_acceleration = adjusted_scaled_linear_acceleration
         self.angular_acceleration = adjusted_scaled_angular_acceleration
 
@@ -215,7 +214,15 @@ class SensorData(object):
 
     def process_debug(self, linear_acceleration, angular_acceleration,dt):
 
-        self.acceleration_log.write('{}, {}, {}, {}\n'.format(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2], dt))
+        self.acceleration_log.write('{}, {}, {}, {}, {}, {}, {}\n'.format(
+            dt,
+            linear_acceleration[0],
+            linear_acceleration[1],
+            linear_acceleration[2],
+            angular_acceleration[0],
+            angular_acceleration[1],
+            angular_acceleration[2],
+        ))
 
         return
 
