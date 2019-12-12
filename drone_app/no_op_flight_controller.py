@@ -19,7 +19,7 @@ class NoOpFlightController (DroneControllerInterface):
 
     def ready(self):
 
-        self.time_to_stop = time.time() + 5
+        self.time_to_stop = time.time() + 15
         return
 
 
