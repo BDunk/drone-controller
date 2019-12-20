@@ -30,6 +30,16 @@ class Drone (SensorDataManager):
     MODE_ACTIVE_CONTROLLING = 3
     MODE_TESTING = 4
 
+    FORWARD_AXIS_INDEX = 0
+    RIGHTWARD_AXIS_INDEX = 1
+    UPWARD_AXIS_INDEX = 2
+    YAW_RIGHTWARD_INDEX = 2
+
+    FORWARD_INVERSION_FACTOR = -1
+    RIGHTWARD_INVERSION_FACTOR = 1
+    UPWARD_INVERSION_FACTOR = 1
+    YAW_RIGHTWARD_FACTOR = -1
+
     #TODO: We are estimating that a 1 meter per second error
     #TODO: Should result in full control deflection
     RISE_PID_CONFIG = [1.0, 0, 0]
@@ -157,14 +167,20 @@ class Drone (SensorDataManager):
         linear_velocity = self.sensor_data.linear_velocity
         angular_velocity = self.sensor_data.angular_velocity
 
-        forward_adjust = self.forward_controller.calculate(linear_velocity[0], delta_read_time)
-        translate_adjust = self.translation_controller.calculate(linear_velocity[1], delta_read_time)
-        rise_adjust = self.rise_controller.calculate(linear_velocity[2], delta_read_time)
-        # TODO: This assumes that the 3rd axis is yaw
-        rotate_adjust = self.rotation_controller.calculate(angular_velocity[2], delta_read_time)
+        forward_velocity = Drone.FORWARD_INVERSION_FACTOR*linear_velocity[Drone.FORWARD_AXIS_INDEX]
+        forward_adjust = self.forward_controller.calculate(forward_velocity, delta_read_time)
+
+        rightward_velocity = Drone.RIGHTWARD_INVERSION_FACTOR*linear_velocity[Drone.RIGHTWARD_AXIS_INDEX]
+        rightward_adjust = self.translation_controller.calculate(rightward_velocity, delta_read_time)
+
+        upward_velocity = Drone.UPWARD_INVERSION_FACTOR*linear_velocity[Drone.UPWARD_AXIS_INDEX]
+        upward_adjust = self.rise_controller.calculate(upward_velocity, delta_read_time)
+
+        rotate_velocity = Drone.YAW_RIGHTWARD_FACTOR*angular_velocity[Drone.YAW_RIGHTWARD_INDEX]
+        rotate_adjust = self.rotation_controller.calculate(rotate_velocity, delta_read_time)
 
         # Pass values outside of range to motor matrix, as it clamps them
-        self.motor_matrix.set_platform_controls(rise_adjust, forward_adjust, translate_adjust, rotate_adjust)
+        self.motor_matrix.set_platform_controls(upward_adjust, forward_adjust, rightward_adjust, rotate_adjust)
 
     def rise_at_rate(self, rise_normalized):
 
