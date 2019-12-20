@@ -6,7 +6,7 @@ from vector_utils import Vector
 from position_sensor_driver import PositionSensorDriver
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 
 class SensorDataManager:

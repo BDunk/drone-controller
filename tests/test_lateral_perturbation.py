@@ -11,7 +11,7 @@ import math
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logger = logging.getLogger()
 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 
 class TestLateral(TestCase, DroneControllerInterface):

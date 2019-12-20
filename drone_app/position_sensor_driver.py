@@ -32,7 +32,7 @@ sampling_rate = 200  # SRD = 1
 
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 # Ben Note:
 

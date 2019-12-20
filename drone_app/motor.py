@@ -3,9 +3,10 @@ from RPIO import PWM
 
 logger = logging.getLogger()
 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 
 servo = PWM.Servo()
+PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
 
 class Motor (object):
     """
@@ -46,7 +47,7 @@ class Motor (object):
     def update_speed(self, percent_speed: float):
         self.percent_speed = percent_speed
         micros_for_speed = Motor.micros_from_percent(self.percent_speed)
-        logger.info('percent {} micros {} for motor {} '.format(percent_speed, micros_for_speed, self.gpio_number))
+        #logger.info('percent {} micros {} for motor {} '.format(percent_speed, micros_for_speed, self.gpio_number))
         servo.set_servo(self.gpio_number, micros_for_speed)
 
     def get_speed(self):

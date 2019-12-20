@@ -7,7 +7,7 @@ import time
 import logging
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 class DroneControllerInterface:
 
@@ -19,7 +19,7 @@ class DroneControllerInterface:
 class Drone (SensorDataManager):
 
 
-    MAXIMUM_RISE_RATE_METERS_PER_SECOND = 0.5
+    MAXIMUM_RISE_RATE_METERS_PER_SECOND = 1.0
     MAXIMUM_TRANSLATE_RATE_METERS_PER_SECOND = 0.5
     MAXIMUM_RADIANS_PER_SECOND = 2*math.pi/5
 
@@ -118,6 +118,7 @@ class Drone (SensorDataManager):
 
     def calibration_complete(self):
 
+        logger.critical("Calibration Complete")
         self.mode = Drone.MODE_ACTIVE_CONTROLLING
         self.last_read_time = time.time()
 
@@ -151,8 +152,6 @@ class Drone (SensorDataManager):
         else:
             raise RuntimeError('Unknown state')
 
-
-
     def read_and_control(self):
 
         read_time = time.time()
@@ -163,6 +162,7 @@ class Drone (SensorDataManager):
             # pid controller should not be called with no time elapsed
             return
         self.last_read_time = read_time
+
 
         linear_velocity = self.sensor_data.linear_velocity
         angular_velocity = self.sensor_data.angular_velocity
@@ -179,6 +179,16 @@ class Drone (SensorDataManager):
         rotate_velocity = Drone.YAW_RIGHTWARD_FACTOR*angular_velocity[Drone.YAW_RIGHTWARD_INDEX]
         rotate_adjust = self.rotation_controller.calculate(rotate_velocity, delta_read_time)
 
+        logger.critical("velocities forward: {}/{}, rightward: {}/{} upward: {}/{}  rotate: {}/{}".format(
+            forward_velocity,
+            forward_adjust,
+            rightward_velocity,
+            rightward_adjust,
+            upward_velocity,
+            upward_adjust,
+            rotate_velocity,
+            rotate_adjust,
+        ))
         # Pass values outside of range to motor matrix, as it clamps them
         self.motor_matrix.set_platform_controls(upward_adjust, forward_adjust, rightward_adjust, rotate_adjust)
 
@@ -187,6 +197,7 @@ class Drone (SensorDataManager):
         rise_normalized = min(1, max(-1, rise_normalized))
         desired_up_velocity = rise_normalized * Drone.MAXIMUM_RISE_RATE_METERS_PER_SECOND
         self.rise_controller.change_set_point(desired_up_velocity)
+        logger.critical("Rise value of {}".format(desired_up_velocity))
 
     def forward_at_rate(self, forward_normalized):
 

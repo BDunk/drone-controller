@@ -10,7 +10,7 @@ from drone_app.PID import PID
 
 
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 logger = logging.getLogger()
 
 logger.setLevel(logging.INFO)

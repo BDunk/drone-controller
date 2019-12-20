@@ -1,5 +1,8 @@
 from motor import Motor
 
+logger = logging.getLogger()
+
+logger.setLevel(logging.ERROR)
 
 # NOTE design choice: this class is passively attempting to accomplish the rotations pitch requested.
 # External logic must be sensing and requesting adjustments.
@@ -93,6 +96,12 @@ class MotorMatrix(object):
         for motor_index in MotorMatrix.ANTICLOCKWISE_ARRAY:
             buffer_speeds[motor_index] += MotorMatrix.TRANSLATION_GAIN * yaw_clockwise_normalized
 
+        # logger.critical("Buffer speeds FL {} FR {} BR {} BL {}".format(
+        #     buffer_speeds[0],
+        #     buffer_speeds[1],
+        #     buffer_speeds[2],
+        #     buffer_speeds[3],
+        # ))
 
         for motor_index in MotorMatrix.ALL:
             motor = self.all[motor_index]

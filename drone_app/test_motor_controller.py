@@ -5,7 +5,7 @@ import time
 
 logger = logging.getLogger()
 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 class TestMotorController (DroneControllerInterface):
 
@@ -27,9 +27,9 @@ class TestMotorController (DroneControllerInterface):
 
         if time_now < self.exit_state_time:
             # nothing to do yet
-            return False
+            return True
 
-        return True
+
         # proceed to next state:
         self.enter_state_time = self.exit_state_time
 
@@ -72,7 +72,7 @@ class TestMotorController (DroneControllerInterface):
 
     def ready(self):
         # Exit the wait mode when ready called
-        self.exit_state_time = time.time() + 30
+        self.exit_state_time = time.time() + 5
         logger.info("About to exit wait")
         self.drone_to_control.direct_motor_test(0.0, 0.0, 0.0, 0.0)
         return
