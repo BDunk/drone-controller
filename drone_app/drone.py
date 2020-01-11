@@ -114,6 +114,17 @@ class Drone (SensorDataManager):
         self.mode = Drone.MODE_ACTIVE_CALIBRATING
         self.motor_matrix.start_your_engines()
 
+        self.velocity_and_control = open("velocity_and_control.csv", "w+")
+        self.velocity_and_control.write('delta_read_time, '
+                                        'forward_velocity, '
+                                        'forward_adjust,'
+                                        'rightward_velocity, '
+                                        'rightward_adjust, '
+                                        'upward_velocity, '
+                                        'upward_adjust, '
+                                        'rotate_velocity, '
+                                        'rotate_adjust,\n')
+
         self.sensor_data.start_calibration()
 
     def calibration_complete(self):
@@ -179,7 +190,8 @@ class Drone (SensorDataManager):
         rotate_velocity = Drone.YAW_RIGHTWARD_FACTOR*angular_velocity[Drone.YAW_RIGHTWARD_INDEX]
         rotate_adjust = self.rotation_controller.calculate(rotate_velocity, delta_read_time)
 
-        logger.critical("velocities forward: {}/{}, rightward: {}/{} upward: {}/{}  rotate: {}/{}".format(
+        self.velocity_and_control.write('{}, {}, {}, {}, {}, {}, {}, {}, {}\n'.format(
+            delta_read_time,
             forward_velocity,
             forward_adjust,
             rightward_velocity,
@@ -189,6 +201,7 @@ class Drone (SensorDataManager):
             rotate_velocity,
             rotate_adjust,
         ))
+
         # Pass values outside of range to motor matrix, as it clamps them
         self.motor_matrix.set_platform_controls(upward_adjust, forward_adjust, rightward_adjust, rotate_adjust)
 

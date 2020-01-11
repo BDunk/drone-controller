@@ -76,12 +76,6 @@ class SensorData(object):
 
         self.acceleration_log = None
 
-    def start_debugging(self):
-
-        self.mode = SensorData.MODE_DEBUGGING
-        logger.setLevel(logging.DEBUG)
-        self.acceleration_log = open("acceleration.csv", "w+")
-        self.acceleration_log.write('dt, l0, l1, l2, a0, a1, a2\n')
 
     # After calibration time has expired, the sensor manager is called with calibration ready
     def start_calibration(self):
@@ -209,21 +203,6 @@ class SensorData(object):
         #finds change in angular velocity and increments angular velocity by that amount
         delta_angular_velocity = Vector.scale(self.angular_acceleration,dt)
         self._angular_velocity = Vector.add(self.angular_velocity,delta_angular_velocity)
-
-
-    def process_debug(self, linear_acceleration, angular_acceleration,dt):
-
-        self.acceleration_log.write('{}, {}, {}, {}, {}, {}, {}\n'.format(
-            dt,
-            linear_acceleration[0],
-            linear_acceleration[1],
-            linear_acceleration[2],
-            angular_acceleration[0],
-            angular_acceleration[1],
-            angular_acceleration[2],
-        ))
-
-        return
 
     @property
     def linear_velocity(self):
