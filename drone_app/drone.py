@@ -37,7 +37,7 @@ class Drone (SensorDataManager):
 
     FORWARD_INVERSION_FACTOR = -1
     RIGHTWARD_INVERSION_FACTOR = 1
-    UPWARD_INVERSION_FACTOR = 1
+    UPWARD_INVERSION_FACTOR = -1
     YAW_RIGHTWARD_FACTOR = -1
 
     #TODO: We are estimating that a 1 meter per second error

@@ -104,7 +104,6 @@ class SensorData(object):
 
         return
 
-
     def process_sensor(self):
 
         acceleration_position_unit = self.acceleration_position_unit

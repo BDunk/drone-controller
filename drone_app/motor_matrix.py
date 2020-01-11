@@ -1,4 +1,5 @@
 from motor import Motor
+import logging
 
 logger = logging.getLogger()
 
@@ -96,12 +97,12 @@ class MotorMatrix(object):
         for motor_index in MotorMatrix.ANTICLOCKWISE_ARRAY:
             buffer_speeds[motor_index] += MotorMatrix.TRANSLATION_GAIN * yaw_clockwise_normalized
 
-        # logger.critical("Buffer speeds FL {} FR {} BR {} BL {}".format(
-        #     buffer_speeds[0],
-        #     buffer_speeds[1],
-        #     buffer_speeds[2],
-        #     buffer_speeds[3],
-        # ))
+        logger.critical("Buffer speeds FL {} FR {} BR {} BL {}".format(
+            buffer_speeds[0],
+            buffer_speeds[1],
+            buffer_speeds[2],
+            buffer_speeds[3],
+        ))
 
         for motor_index in MotorMatrix.ALL:
             motor = self.all[motor_index]
@@ -110,6 +111,7 @@ class MotorMatrix(object):
 
             translated_postive = desired_speed + 1
             scaled_to_percent = (translated_postive/ 2) * 100
+            logger.critical("Motor speed index {} value of {}".format(motor_index, scaled_to_percent))
             motor.update_speed(scaled_to_percent)
 
     def direct_test(
